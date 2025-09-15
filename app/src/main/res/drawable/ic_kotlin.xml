@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Hexagon Background -->
+    <path
+        android:fillColor="#512DA8"
+        android:pathData="M24,2 L44,14 L44,34 L24,46 L4,34 L4,14 Z" />
+
+    <!-- Inner Hexagon -->
+    <path
+        android:fillColor="#7E57C2"
+        android:pathData="M24,6 L40,16 L40,32 L24,42 L8,32 L8,16 Z" />
+
+    <!-- Kotlin "K" Style Triangle -->
+    <path
+        android:fillColor="#FF6D00"
+        android:pathData="M12,36 L24,24 L12,12 Z" />
+    <path
+        android:fillColor="#FFAB40"
+        android:pathData="M24,24 L36,12 L12,12 Z" />
+    <path
+        android:fillColor="#FFD180"
+        android:pathData="M24,24 L36,36 L12,36 Z" />
+</vector>

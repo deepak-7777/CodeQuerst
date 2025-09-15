@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Shield outer shape -->
+    <path
+        android:fillColor="#E5A228"
+        android:pathData="M71,0h370l-33,428 -152,84 -152,-84z" />
+
+    <!-- Shield inner lighter shape -->
+    <path
+        android:fillColor="#F1BF26"
+        android:pathData="M256,37v439l123,-68 27,-371z" />
+
+    <!-- Left white part of S -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M166,145h180l-6,65h-109l3,36h103l-10,110 -71,30 -70,-30 -4,-45h47l2,20 26,11 27,-11 4,-40h-130z" />
+
+    <!-- Right yellow overlay part of S -->
+    <path
+        android:fillColor="#E5A228"
+        android:pathData="M256,145h90l-6,65h-84v-65zM256,246h51l-6,70 -45,20v-90z" />
+
+    <!-- "JS" text on top -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M135,60h30v40h-30zM190,60h60v15h-45v10h45v15h-60z" />
+</vector>

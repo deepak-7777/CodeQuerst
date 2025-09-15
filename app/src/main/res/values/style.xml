@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- Toolbar title bold -->
+    <style name="ToolbarTitleBold" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- App Theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+    </style>
+
+<!--          image ko circle mai lane ke liye-->
+    <style name="CircleImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+
+</resources>
+
+
+
+

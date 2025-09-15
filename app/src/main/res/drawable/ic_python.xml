@@ -1,0 +1,42 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Hexagon Background -->
+    <path
+        android:fillColor="#FFC107"
+        android:pathData="M24,2 L44,14 L44,34 L24,46 L4,34 L4,14 Z" />
+
+    <!-- Inner Hexagon -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M24,6 L40,16 L40,32 L24,42 L8,32 L8,16 Z" />
+
+    <!-- Python Top (Blue Part) -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M18,18h8a4,4 0 0,1 4,4v4h-6v2h8a4,4 0 0,0 4-4v-6a6,6 0 0,0-6-6h-8a4,4 0 0,0-4,4v2z" />
+
+    <!-- White circle for top eye -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,18
+            m-1.5,0
+            a1.5,1.5 0 1,0 3,0
+            a1.5,1.5 0 1,0 -3,0" />
+
+    <!-- Python Bottom (Green Part) -->
+    <path
+        android:fillColor="#43A047"
+        android:pathData="M30,24h-8a4,4 0 0,0-4,4v6a6,6 0 0,0 6,6h8a4,4 0 0,0 4-4v-2h-8v-2h6v-4a6,6 0 0,0-6-6z" />
+
+    <!-- White circle for bottom eye -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,34
+            m-1.5,0
+            a1.5,1.5 0 1,0 3,0
+            a1.5,1.5 0 1,0 -3,0" />
+</vector>

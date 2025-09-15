@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.CodeQuerst" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Status bar background light -->
+        <item name="android:statusBarColor">@color/white</item>
+        <!-- Status bar icons black (dark) -->
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+
+
+</resources>
+
+
+
+
+
+<!--    Theme.AppCompat.Light.NoActionBar-->
+
+
+
+
+
+<!--    Theme.MaterialComponents.DayNight.NoActionBar-->

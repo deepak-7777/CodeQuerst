@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Hexagon Background -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M24,2 L44,14 L44,34 L24,46 L4,34 L4,14 Z" />
+
+    <!-- Inner Hexagon -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M24,6 L40,16 L40,32 L24,42 L8,32 L8,16 Z" />
+
+    <!-- Letter C -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,15
+                          A10,10 0 1,0 30,33
+                          L26,29
+                          A6,6 0 1,1 26,19 Z" />
+</vector>

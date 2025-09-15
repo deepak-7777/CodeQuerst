@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207714362050",
+    "project_id": "codingquiz-95600",
+    "storage_bucket": "codingquiz-95600.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207714362050:android:59a8f2f9c771fbf808115b",
+        "android_client_info": {
+          "package_name": "com.example.codequerst"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZ3TrKniRylsvvApDJbxvOwSOh1gdMiIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

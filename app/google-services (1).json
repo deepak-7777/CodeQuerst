@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "207714362050",
+    "firebase_url": "https://codingquiz-95600-default-rtdb.firebaseio.com",
+    "project_id": "codingquiz-95600",
+    "storage_bucket": "codingquiz-95600.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207714362050:android:59a8f2f9c771fbf808115b",
+        "android_client_info": {
+          "package_name": "com.example.codequerst"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207714362050-97fqomd72bu1en0lc0i8su69r3vivcoq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.codequerst",
+            "certificate_hash": "805af4d55dfe6546bf0e8e89ea8a2bb93c2190e2"
+          }
+        },
+        {
+          "client_id": "207714362050-iljhl6q39aj20kehc5abubglmbj6dqv1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZ3TrKniRylsvvApDJbxvOwSOh1gdMiIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207714362050-iljhl6q39aj20kehc5abubglmbj6dqv1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
