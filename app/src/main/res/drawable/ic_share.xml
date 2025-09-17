@@ -1,0 +1,41 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Left circle -->
+    <path
+        android:fillColor="@color/iconColor"
+        android:strokeColor="@color/iconColor"
+        android:strokeWidth="3"
+        android:pathData="M10,24a5,5 0 1,0 0,-0.01z"/>
+
+    <!-- Top-right circle -->
+    <path
+        android:fillColor="@color/iconColor"
+        android:strokeColor="@color/iconColor"
+        android:strokeWidth="3"
+        android:pathData="M36,16a5,5 0 1,0 0,-0.01z"/>
+
+    <!-- Bottom-right circle -->
+    <path
+        android:fillColor="@color/iconColor"
+        android:strokeColor="@color/iconColor"
+        android:strokeWidth="3"
+        android:pathData="M36,32a5,5 0 1,0 0,-0.01z"/>
+
+    <!-- Line from left to top-right -->
+    <path
+        android:fillColor="@color/iconColor"
+        android:strokeColor="@color/iconColor"
+        android:strokeWidth="3"
+        android:pathData="M12,24l22,-8"/>
+
+    <!-- Line from left to bottom-right -->
+    <path
+        android:fillColor="@color/iconColor"
+        android:strokeColor="@color/iconColor"
+        android:strokeWidth="3"
+        android:pathData="M12,24l22,8"/>
+</vector>

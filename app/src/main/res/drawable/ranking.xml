@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Left block -->
+    <path
+        android:fillColor="@color/ranking_icon_color"
+        android:pathData="M3,14h5v6H3z" />
+
+    <!-- Center block -->
+    <path
+        android:fillColor="@color/ranking_icon_color"
+        android:pathData="M9.5,11h5v9h-5z" />
+
+    <!-- Right block -->
+    <path
+        android:fillColor="@color/ranking_icon_color"
+        android:pathData="M17,13h4v7h-4z" />
+
+    <!-- Smaller star above center block -->
+    <path
+        android:fillColor="@color/ranking_icon_color"
+        android:pathData="M12,3.5l0.82,2.5h2.63l-2.13,1.54l0.81,2.47l-2.13,-1.53l-2.13,1.53l0.81,-2.47l-2.13,-1.54h2.63z"/>
+</vector>

@@ -1,18 +1,25 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/Mode"
-        android:title="Mode" />
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/ic_home"
+        app:cnb_iconColor="@color/white"
+        app:cnb_backgroundColor="@color/orange"/>
 
     <item
-        android:id="@+id/feedback"
-        android:title="Feedback" />
-
-    <item
-        android:id="@+id/share"
-        android:title="Share App" />
+        android:id="@+id/ranking"
+        android:title="Ranking"
+        android:icon="@drawable/ranking"
+        app:cnb_iconColor="@color/white"
+        app:cnb_backgroundColor="@color/orange"/>
 
     <item
         android:id="@+id/setting"
-        android:title="Setting" />
+        android:title="Setting"
+        android:icon="@drawable/setting"
+        app:cnb_iconColor="@color/white"
+        app:cnb_backgroundColor="@color/orange"/>
+
 </menu>

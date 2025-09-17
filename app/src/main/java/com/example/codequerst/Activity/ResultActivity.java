@@ -55,7 +55,7 @@ public class ResultActivity extends AppCompatActivity {
         tvName = findViewById(R.id.tvName);
 
         btnExploreMore.setOnClickListener(v -> {
-            startActivity(new android.content.Intent(ResultActivity.this, MainActivity.class));
+            startActivity(new android.content.Intent(ResultActivity.this, HomeActivity.class));
             finish();
         });
 

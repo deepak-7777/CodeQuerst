@@ -27,7 +27,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -134,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
-                        saveUserToFirestore(user);
+                        saveUserToRealtimeDatabase(user);
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         finish();
                     } else {
@@ -147,16 +148,20 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserToFirestore(FirebaseUser user) {
+    private void saveUserToRealtimeDatabase(FirebaseUser user) {
         if (user == null) return;
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", user.getDisplayName());
         userData.put("email", user.getEmail());
         userData.put("phone", "");
         userData.put("about", "");
+        userData.put("profileImage", ""); // Optional, for consistency
 
-        db.collection("users").document(user.getUid())
-                .set(userData, com.google.firebase.firestore.SetOptions.merge());
+        usersRef.updateChildren(userData).addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Toast.makeText(LoginActivity.this, "Failed to save user data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

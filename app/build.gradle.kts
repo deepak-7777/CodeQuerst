@@ -52,17 +52,15 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation ("com.google.android.gms:play-services-auth:20.6.0")
-
     /// firestore
     implementation("com.google.firebase:firebase-firestore:24.4.4")
-
     ///   Cloudinary
-//    implementation("com.cloudinary:cloudinary-android:3.1.1")
-//    implementation("com.github.bumptech.glide:glide:4.15.1")
-
     implementation("com.cloudinary:cloudinary-android:3.1.1")
     implementation("com.github.bumptech.glide:glide:4.15.1")
-
-             ///    profile image ko circle shape mai lane ke liye
+    ///    profile image ko circle shape mai lane ke liye
     implementation("com.google.android.material:material:1.10.0")
+       ////     chip navigation for homActivity in menu 
+    implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
+    ////   homeActivity mai refresh button ke liye
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

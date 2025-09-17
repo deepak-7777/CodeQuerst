@@ -43,7 +43,7 @@
 
             <!-- Toolbar -->
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/cToolbar"
+                android:id="@+id/ProfileToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:paddingTop="38dp"
@@ -60,6 +60,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Profile"
+                    android:textColor="@color/TextColor"
                     android:textStyle="bold"
                     android:textSize="21sp"
                     android:paddingStart="12sp" />
@@ -104,6 +105,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Name"
+                    android:textColor="@color/TextColor"
                     android:layout_marginStart="5dp"
                     android:textSize="17sp" />
 
@@ -114,6 +116,7 @@
                     android:background="@drawable/rounded_edittext"
                     android:padding="12dp"
                     android:hint="Type your name"
+                    android:textColor="@color/iconColor"
                     android:textSize="14sp"
                     android:focusable="false"
                     android:clickable="true"/>
@@ -131,6 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Email"
+                    android:textColor="@color/TextColor"
                     android:layout_marginStart="5dp"
                     android:textSize="17sp" />
 
@@ -141,6 +145,7 @@
                     android:background="@drawable/rounded_edittext"
                     android:padding="12dp"
                     android:hint="Type your email"
+                    android:textColor="@color/iconColor"
                     android:textSize="14sp"
                     android:focusable="false"
                     android:clickable="true"/>
@@ -158,6 +163,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Phone Number"
+                    android:textColor="@color/TextColor"
                     android:layout_marginStart="5dp"
                     android:textSize="17sp" />
 
@@ -168,6 +174,7 @@
                     android:background="@drawable/rounded_edittext"
                     android:padding="12dp"
                     android:hint="Type your number"
+                    android:textColor="@color/iconColor"
                     android:inputType="phone"
                     android:textSize="14sp"
                     android:focusable="false"
@@ -186,6 +193,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="About"
+                    android:textColor="@color/TextColor"
                     android:layout_marginStart="5dp"
                     android:textSize="17sp" />
 
@@ -196,6 +204,7 @@
                     android:background="@drawable/rounded_edittext"
                     android:padding="12dp"
                     android:hint="About yourself"
+                    android:textColor="@color/iconColor"
                     android:textSize="14sp"
                     android:focusable="false"
                     android:clickable="true"/>

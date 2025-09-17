@@ -7,5 +7,12 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <color name="ranking_icon_color">#FFFFFF</color> <!-- White or light color for dark theme -->
+    <color name="colorControlNormal">#000000</color> <!-- Black for light theme -->
+    <color name="iconColor">#E9E5E5</color>  <!-- about app -->
+    <color name="TextColor">#FFFFFF</color>  <!-- All text -->
+    <color name="BoxColor">#454343</color>  <!-- Card View from HomeActivity -->
+    <color name="home_bg">#161616</color>  <!-- Bg from  HomeActivity -->
+
 
 </resources>

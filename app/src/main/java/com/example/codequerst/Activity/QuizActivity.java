@@ -87,6 +87,8 @@ public class QuizActivity extends AppCompatActivity {
         radioGroup.setVisibility(View.GONE);
         tvCounter.setVisibility(View.GONE);
         tvCTitle.setVisibility(View.GONE);
+        circularProgressIndicator.setVisibility(View.GONE);
+        tvTimer.setVisibility(View.GONE);
 
         ref = FirebaseDatabase.getInstance().getReference("questions")
                 .child(language)
@@ -164,6 +166,8 @@ public class QuizActivity extends AppCompatActivity {
                     radioGroup.setVisibility(View.VISIBLE);
                     tvCounter.setVisibility(View.VISIBLE);
                     tvCTitle.setVisibility(View.VISIBLE);
+                    circularProgressIndicator.setVisibility(View.VISIBLE);
+                    tvTimer.setVisibility(View.VISIBLE);
 
                     startTimer();
                 } else {
@@ -312,4 +316,21 @@ public class QuizActivity extends AppCompatActivity {
         startActivity(i);
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Exit Quiz")
+                .setMessage("Are you sure you want to exit? Your progress will be lost.")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    stopTimer(); // Stop the timer if it's running
+                    finish();   // Exit the quiz
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    dialog.dismiss(); // Stay on the quiz
+                })
+                .setCancelable(false)
+                .show();
+    }
+
 }

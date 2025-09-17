@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/cToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:paddingTop="38dp"
+        app:titleTextAppearance="@style/ToolbarTitleBold">
+
+        <TextView
+            android:id="@+id/backSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5sp"
+            android:background="@drawable/back"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Setting"
+            android:textColor="@color/TextColor"
+            android:textStyle="bold"
+            android:textSize="21dp"
+            android:paddingStart="12sp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- ScrollView for settings content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/settingImage"
+                    android:layout_width="62dp"
+                    android:layout_height="62dp"
+                    android:layout_marginStart="7dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/circle_border"
+                    app:shapeAppearanceOverlay="@style/CircleImageView"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/settingName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/TextColor"
+                        android:textSize="22sp"
+                        android:layout_marginTop="5dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/settingAbout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <!-- Your horizontal switch layout -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="4dp"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/reportText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Dark Mode"
+                    android:textStyle="bold"
+                    android:textColor="@color/TextColor"
+                    android:textSize="16sp"
+                    android:layout_weight="1"/>
+
+                <Switch
+                    android:id="@+id/reportSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/aboutApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_info" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="16dp"
+                    android:text="About App"
+                    android:textColor="@color/TextColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/privacyApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_privacy" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="16dp"
+                    android:text="Privacy"
+                    android:textColor="@color/TextColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/shareApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_share" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="16dp"
+                    android:text="Share"
+                    android:textColor="@color/TextColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/feedbackApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_feedback" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="16dp"
+                    android:text="Feedback"
+                    android:textColor="@color/TextColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

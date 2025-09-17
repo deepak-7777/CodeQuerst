@@ -18,6 +18,7 @@
         android:id="@+id/tvCorrectAnswers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/iconColor"
         android:text="Correct Answer  "
         android:textSize="16sp" />
 
@@ -26,6 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="10"
+        android:textColor="@color/iconColor"
         android:textSize="16sp"
         android:textAlignment="center" />
 

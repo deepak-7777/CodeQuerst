@@ -1,14 +1,17 @@
 package com.example.codequerst.Activity;
 
-import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -33,19 +37,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    SharedPreferences sharedPreferences;
-    boolean isGuest;
+    private SharedPreferences sharedPreferences;
+    private boolean isGuest;
     private EditText etFirstName, etEmail, etPhone, etAddress;
     private ImageView profileImage, ivEditImage;
     private FirebaseAuth firebaseAuth;
@@ -56,13 +56,18 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 101;
     private Uri selectedImageUri;
 
+    private SharedPreferences.Editor sharedPrefsEditor;
+    private BroadcastReceiver networkReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        sharedPrefsEditor = sharedPreferences.edit();
         isGuest = sharedPreferences.getBoolean("isGuest", false);
+
         etFirstName = findViewById(R.id.etFirstName);
         etEmail = findViewById(R.id.etEmail);
         etPhone = findViewById(R.id.etPhone);
@@ -72,6 +77,28 @@ public class ProfileActivity extends AppCompatActivity {
         backProfile = findViewById(R.id.backBtn);
 
         backProfile.setOnClickListener(v -> finish());
+
+        profileImage.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, ProfileViewActivity.class);
+
+            if (selectedImageUri != null) {
+                // Agar user ne gallery/Cloudinary se image set ki hai
+                intent.putExtra("imageUri", selectedImageUri.toString());
+            } else {
+                // Agar default initials ya guest image hai, bitmap ke liye
+                profileImage.setDrawingCacheEnabled(true);
+                Bitmap bitmap = profileImage.getDrawingCache();
+                // Bitmap ko pass karne ke liye compress karke byte array me convert karenge
+                java.io.ByteArrayOutputStream stream = new java.io.ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                intent.putExtra("imageBitmap", byteArray);
+                profileImage.setDrawingCacheEnabled(false);
+            }
+
+            startActivity(intent);
+        });
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -94,7 +121,7 @@ public class ProfileActivity extends AppCompatActivity {
         gsc = GoogleSignIn.getClient(this, gso);
 
         try {
-            Map config = new HashMap();
+            Map<String, String> config = new HashMap<>();
             config.put("cloud_name", "dmsbaxkle");
             config.put("api_key", "183187419764851");
             config.put("api_secret", "1N9ZBXDi4r1lxwyHYOELDBlFoX0");
@@ -107,28 +134,63 @@ public class ProfileActivity extends AppCompatActivity {
         ivEditImage.setOnClickListener(v -> openGallery());
         findViewById(R.id.BtnlogOut).setOnClickListener(v -> logout());
 
+        setupNetworkReceiver();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decorView = getWindow().getDecorView();
-            int flags = decorView.getSystemUiVisibility();
-            if (isDarkModeOn()) {
-                decorView.setSystemUiVisibility(flags & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            } else {
-                decorView.setSystemUiVisibility(flags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        }
     }
 
-    private boolean isDarkModeOn() {
-        int nightModeFlags =
-                getResources().getConfiguration().uiMode &
-                        Configuration.UI_MODE_NIGHT_MASK;
-        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
+    private void setupNetworkReceiver() {
+        networkReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (isNetworkAvailable()) {
+                    syncPendingUpdates();
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkReceiver, filter);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = cm.getActiveNetworkInfo();
+        return network != null && network.isConnected();
+    }
+
+    private void syncPendingUpdates() {
+        if (!isGuest && usersRef != null) {
+            Map<String, Object> pendingUpdates = new HashMap<>();
+            if (sharedPreferences.contains("offline_name")) {
+                pendingUpdates.put("name", sharedPreferences.getString("offline_name", ""));
+            }
+            if (sharedPreferences.contains("offline_email")) {
+                pendingUpdates.put("email", sharedPreferences.getString("offline_email", ""));
+            }
+            if (sharedPreferences.contains("offline_phone")) {
+                pendingUpdates.put("phone", sharedPreferences.getString("offline_phone", ""));
+            }
+            if (sharedPreferences.contains("offline_about")) {
+                pendingUpdates.put("about", sharedPreferences.getString("offline_about", ""));
+            }
+            if (!pendingUpdates.isEmpty()) {
+                usersRef.updateChildren(pendingUpdates).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        sharedPrefsEditor.remove("offline_name")
+                                .remove("offline_email")
+                                .remove("offline_phone")
+                                .remove("offline_about")
+                                .apply();
+//                        Toast.makeText(this, "Profile synced!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 
     private void loadUserProfile() {
@@ -144,41 +206,23 @@ public class ProfileActivity extends AppCompatActivity {
             etAddress.setText(about);
 
             setDefaultProfileImage(name);
-
-            findViewById(R.id.loadingLayout).setVisibility(View.GONE);
-            findViewById(R.id.scrollView).setVisibility(View.VISIBLE);
         } else {
             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
             if (currentUser == null) return;
-            findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
-            findViewById(R.id.scrollView).setVisibility(View.GONE);
 
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    String name = "", email = "", phone = "", about = "", imageUrl = "";
+                    String name = safeGet(snapshot, "name");
+                    String email = safeGet(snapshot, "email");
+                    String phone = safeGet(snapshot, "phone");
+                    String about = safeGet(snapshot, "about");
+                    String imageUrl = safeGet(snapshot, "profileImage");
 
-                    if (snapshot.exists()) {
-                        name = safeGet(snapshot, "name");
-                        email = safeGet(snapshot, "email");
-                        phone = safeGet(snapshot, "phone");
-                        about = safeGet(snapshot, "about");
-                        imageUrl = safeGet(snapshot, "profileImage");
-                    } else {
-                        email = currentUser.getEmail();
-                        name = currentUser.getDisplayName();
-                        Map<String, Object> initialData = new HashMap<>();
-                        initialData.put("name", name != null ? name : "");
-                        initialData.put("email", email != null ? email : "");
-                        initialData.put("phone", "");
-                        initialData.put("about", "");
-                        usersRef.setValue(initialData);
-                    }
-
-                    etFirstName.setText(name != null ? name : "");
-                    etEmail.setText(email != null ? email : "");
-                    etPhone.setText(phone != null ? phone : "");
-                    etAddress.setText(about != null ? about : "");
+                    etFirstName.setText(name);
+                    etEmail.setText(email);
+                    etPhone.setText(phone);
+                    etAddress.setText(about);
 
                     if (imageUrl != null && !imageUrl.isEmpty()) {
                         Glide.with(ProfileActivity.this)
@@ -188,16 +232,11 @@ public class ProfileActivity extends AppCompatActivity {
                     } else {
                         setDefaultProfileImage(name);
                     }
-
-                    findViewById(R.id.loadingLayout).setVisibility(View.GONE);
-                    findViewById(R.id.scrollView).setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onCancelled(DatabaseError error) {
-                    Toast.makeText(ProfileActivity.this, "Failed to load profile: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    findViewById(R.id.loadingLayout).setVisibility(View.GONE);
-                    findViewById(R.id.container).setVisibility(View.VISIBLE);
+                    Toast.makeText(ProfileActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -209,23 +248,19 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setEditTextListeners() {
         etFirstName.setOnClickListener(v -> showEditDialog("Name", etFirstName, "name"));
-
         if (isGuest) {
             etEmail.setOnClickListener(v -> showEditDialog("Email", etEmail, "email"));
         } else {
-            etEmail.setOnClickListener(v -> Toast.makeText(this, "Email cannot be edited", Toast.LENGTH_SHORT).show());
+            etEmail.setOnClickListener(v -> Toast.makeText(this, "Email cannot be change", Toast.LENGTH_SHORT).show());
         }
-
-        etPhone.setOnClickListener(v -> showEditDialog("Phone Number", etPhone, "phone"));
+        etPhone.setOnClickListener(v -> showEditDialog("Phone", etPhone, "phone"));
         etAddress.setOnClickListener(v -> showEditDialog("About", etAddress, "about"));
     }
-
 
     private void showEditDialog(String title, EditText editText, String field) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_profile, null);
         builder.setView(dialogView);
-
         AlertDialog dialog = builder.create();
 
         TextView dialogTitle = dialogView.findViewById(R.id.dialogTitle);
@@ -240,7 +275,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> {
             String newValue = input.getText().toString().trim();
             editText.setText(newValue);
-            updateUserProfile(field, newValue);
+            saveProfileField(field, newValue);
             if ("name".equals(field)) {
                 setDefaultProfileImage(newValue);
             }
@@ -251,16 +286,18 @@ public class ProfileActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
-    private void updateUserProfile(String field, String value) {
+    private void saveProfileField(String field, String value) {
         if (isGuest) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(field, value);
-            editor.apply();
+            sharedPrefsEditor.putString(field, value).apply();
         } else {
-            Map<String, Object> updateMap = new HashMap<>();
-            updateMap.put(field, value);
-            usersRef.updateChildren(updateMap)
-                    .addOnFailureListener(e -> Toast.makeText(this, "Failed to update " + field, Toast.LENGTH_SHORT).show());
+            if (isNetworkAvailable()) {
+                Map<String, Object> updateMap = new HashMap<>();
+                updateMap.put(field, value);
+                usersRef.updateChildren(updateMap).addOnFailureListener(e -> Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
+            } else {
+                sharedPrefsEditor.putString("offline_" + field, value).apply();
+//                Toast.makeText(this, "Changes saved locally. Will sync when network is available.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -308,6 +345,13 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void uploadImageToCloudinary(Uri imageUri) {
+        // For Google-logged-in users
+        if (!isGuest && !isNetworkAvailable()) {
+            Toast.makeText(ProfileActivity.this, "Please check your network connection", Toast.LENGTH_SHORT).show();
+            return; // Stop further execution
+        }
+
+        // Proceed with upload
         MediaManager.get().upload(imageUri)
                 .unsigned("my_unsigned_upload")
                 .callback(new UploadCallback() {
@@ -316,20 +360,34 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override public void onSuccess(String requestId, Map resultData) {
                         if (resultData.get("secure_url") != null && !isGuest) {
                             String imageUrl = resultData.get("secure_url").toString();
-                            usersRef.child("profileImage").setValue(imageUrl);
+                            // Already checked network before, but double-check
+                            if (isNetworkAvailable()) {
+                                usersRef.child("profileImage").setValue(imageUrl);
+                            } else {
+                                sharedPrefsEditor.putString("offline_profileImage", imageUrl).apply();
+                            }
                         }
                     }
                     @Override public void onError(String requestId, ErrorInfo error) {
                         Toast.makeText(ProfileActivity.this, "Image upload failed: " + error.getDescription(), Toast.LENGTH_SHORT).show();
                     }
                     @Override public void onReschedule(String requestId, ErrorInfo error) { }
-                })
-                .dispatch();
+                }).dispatch();
     }
+
+
 
     private void logout() {
         if (isGuest) {
-            sharedPreferences.edit().clear().apply();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            // Guest ke personal fields delete karo
+            editor.remove("name");
+            editor.remove("email");
+            editor.remove("phone");
+            editor.remove("about");
+            // Guest flag ko false set karo
+            editor.putBoolean("isGuest", false);
+            editor.apply();
             Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -342,6 +400,14 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             });
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (networkReceiver != null) {
+            unregisterReceiver(networkReceiver);
         }
     }
 }

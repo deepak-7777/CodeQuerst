@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CodeQuerst">
         <activity
+            android:name=".Activity.ProfileViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.HomeActivity"
             android:exported="false" />
         <activity
