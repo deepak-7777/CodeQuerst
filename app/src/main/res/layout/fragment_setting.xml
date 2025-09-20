@@ -52,7 +52,6 @@
                     android:layout_height="62dp"
                     android:layout_marginStart="7dp"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/circle_border"
                     app:shapeAppearanceOverlay="@style/CircleImageView"/>
 
 
@@ -99,7 +98,7 @@
                     android:text="Dark Mode"
                     android:textStyle="bold"
                     android:textColor="@color/TextColor"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:layout_weight="1"/>
 
                 <Switch

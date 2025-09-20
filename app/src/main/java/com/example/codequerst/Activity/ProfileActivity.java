@@ -293,13 +293,21 @@ public class ProfileActivity extends AppCompatActivity {
             if (isNetworkAvailable()) {
                 Map<String, Object> updateMap = new HashMap<>();
                 updateMap.put(field, value);
-                usersRef.updateChildren(updateMap).addOnFailureListener(e -> Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
+                usersRef.updateChildren(updateMap)
+                        .addOnCompleteListener(task -> {
+                            // Broadcast send karo fragment ko update karne ke liye
+                            Intent intent = new Intent("PROFILE_UPDATED");
+                            sendBroadcast(intent);
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
             } else {
                 sharedPrefsEditor.putString("offline_" + field, value).apply();
-//                Toast.makeText(this, "Changes saved locally. Will sync when network is available.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent("PROFILE_UPDATED");
+                sendBroadcast(intent);
             }
         }
     }
+
 
     private void setDefaultProfileImage(String fullName) {
         if (fullName == null || fullName.isEmpty()) fullName = "U";
@@ -357,42 +365,59 @@ public class ProfileActivity extends AppCompatActivity {
                 .callback(new UploadCallback() {
                     @Override public void onStart(String requestId) { }
                     @Override public void onProgress(String requestId, long bytes, long totalBytes) { }
+
                     @Override public void onSuccess(String requestId, Map resultData) {
                         if (resultData.get("secure_url") != null && !isGuest) {
                             String imageUrl = resultData.get("secure_url").toString();
-                            // Already checked network before, but double-check
+
                             if (isNetworkAvailable()) {
-                                usersRef.child("profileImage").setValue(imageUrl);
+                                usersRef.child("profileImage").setValue(imageUrl)
+                                        .addOnCompleteListener(task -> {
+                                            // Broadcast to notify RankingFragment
+                                            Intent intent = new Intent("PROFILE_UPDATED");
+                                            sendBroadcast(intent);
+                                        });
                             } else {
                                 sharedPrefsEditor.putString("offline_profileImage", imageUrl).apply();
+                                // Broadcast even for offline update
+                                Intent intent = new Intent("PROFILE_UPDATED");
+                                sendBroadcast(intent);
                             }
                         }
                     }
+
                     @Override public void onError(String requestId, ErrorInfo error) {
                         Toast.makeText(ProfileActivity.this, "Image upload failed: " + error.getDescription(), Toast.LENGTH_SHORT).show();
                     }
+
                     @Override public void onReschedule(String requestId, ErrorInfo error) { }
                 }).dispatch();
     }
 
 
 
+
     private void logout() {
         if (isGuest) {
+            // SharedPreferences clear
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            // Guest ke personal fields delete karo
             editor.remove("name");
             editor.remove("email");
             editor.remove("phone");
             editor.remove("about");
-            // Guest flag ko false set karo
             editor.putBoolean("isGuest", false);
             editor.apply();
+
+            // Firebase anonymous user sign out
+            FirebaseAuth.getInstance().signOut();
+
+            // LoginActivity open
             Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         } else {
+            // Google user logout
             firebaseAuth.signOut();
             gsc.signOut().addOnCompleteListener(task -> {
                 Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
@@ -402,6 +427,7 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
     }
+
 
     @Override
     protected void onDestroy() {

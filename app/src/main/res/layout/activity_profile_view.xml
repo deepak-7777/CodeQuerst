@@ -48,9 +48,8 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ProfileImageView"
-                android:layout_width="325dp"
-                android:layout_height="325dp"
-
+                android:layout_width="335dp"
+                android:layout_height="335dp"
                 android:scaleType="centerCrop"
                 android:background="@drawable/circle_border"
                 app:shapeAppearanceOverlay="@style/CircleImageView"/>

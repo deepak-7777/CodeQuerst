@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/home_bg"
     android:orientation="vertical">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/cToolbar"
+        android:id="@+id/RankingToolbar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:paddingTop="38dp"
@@ -18,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5sp"
+            android:textColor="@color/TextColor"
             android:background="@drawable/back"/>
 
         <TextView
@@ -30,11 +32,192 @@
             android:paddingStart="12sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- ScrollView for settings content -->
+    <!-- Toggle Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingHorizontal="18dp"
+        android:orientation="horizontal"
+        android:layout_marginVertical="10dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/BtnWeekly"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ranking_btn_bg"
+            android:layout_weight="1"
+            android:textColor="@color/TextColor"
+            android:layout_marginEnd="4dp"
+            android:text="Weekly"
+            android:textSize="18sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/BtnAllTime"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ranking_btn_bg"
+            android:textColor="@color/TextColor"
+            android:layout_weight="1"
+            android:text="All Time"
+            android:layout_marginStart="4dp"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingHorizontal="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Podium Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="24dp">
+
+                <!-- Second Place -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imgSecond"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@android:drawable/sym_def_app_icon" />
+
+                    <TextView
+                        android:layout_width="40dp"
+                        android:layout_height="85dp"
+                        android:gravity="center"
+                        android:background="@drawable/podium_silver"
+                        android:text="2"
+                        android:textSize="45sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"/>
+
+                    <TextView
+                        android:id="@+id/tvSecondName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Alena Donin"
+                        android:textStyle="bold"
+                        android:textColor="@color/TextColor"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/tvSecondPoints"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1,469 pts"
+                        android:textColor="@color/iconColor"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+
+                <!-- First Place -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imgFirst"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@android:drawable/sym_def_app_icon" />
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="100dp"
+                        android:gravity="center"
+                        android:background="@drawable/podium_gold"
+                        android:text="1"
+                        android:textSize="60sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"/>
+
+                    <TextView
+                        android:id="@+id/tvFirstName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Davis Curtis"
+                        android:textStyle="bold"
+                        android:textColor="@color/TextColor"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/tvFirstPoints"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2,569 pts"
+                        android:textColor="@color/iconColor"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+
+                <!-- Third Place -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imgThird"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@android:drawable/sym_def_app_icon" />
+
+                    <TextView
+                        android:layout_width="40dp"
+                        android:layout_height="72dp"
+                        android:gravity="center"
+                        android:background="@drawable/podium_bronze"
+                        android:text="3"
+                        android:textSize="35sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"/>
+
+                    <TextView
+                        android:id="@+id/tvThirdName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Craig Gouse"
+                        android:textStyle="bold"
+                        android:textColor="@color/TextColor"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/tvThirdPoints"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1,053 pts"
+                        android:textColor="@color/iconColor"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerLeaderboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="12dp"/>
+        </LinearLayout>
 
     </ScrollView>
-
 </LinearLayout>

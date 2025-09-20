@@ -70,11 +70,32 @@ public class LoginActivity extends AppCompatActivity {
 
         btnGoogle.setOnClickListener(v -> signIn());
 
+//        btnGuest.setOnClickListener(v -> {
+//            saveGuestProfile(); // sirf local save
+//            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+//            finish();
+//        });
+
         btnGuest.setOnClickListener(v -> {
-            saveGuestProfile();
-            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-            finish();
+            auth.signInAnonymously().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("isGuest", true);
+                    editor.putString("name", "Guest User");
+                    editor.putString("email", "guest@example.com");
+                    editor.putString("phone", "");
+                    editor.putString("about", "");
+                    editor.apply();
+
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Guest login failed!", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
+
+
 
         // Styling the status bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -94,15 +115,15 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void saveGuestProfile() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("isGuest", true);
-        editor.putString("name", "Guest User");
-        editor.putString("email", "guest@example.com");
-        editor.putString("phone", "");
-        editor.putString("about", "");
-        editor.apply();
-    }
+//    private void saveGuestProfile() {
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putBoolean("isGuest", true);
+//        editor.putString("name", "Guest User");
+//        editor.putString("email", "guest@example.com");
+//        editor.putString("phone", "");
+//        editor.putString("about", "");
+//        editor.apply();
+//    }
 
     private boolean isDarkModeOn() {
         int nightModeFlags =
@@ -150,18 +171,34 @@ public class LoginActivity extends AppCompatActivity {
 
     private void saveUserToRealtimeDatabase(FirebaseUser user) {
         if (user == null) return;
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("name", user.getDisplayName());
-        userData.put("email", user.getEmail());
-        userData.put("phone", "");
-        userData.put("about", "");
-        userData.put("profileImage", ""); // Optional, for consistency
 
-        usersRef.updateChildren(userData).addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                Toast.makeText(LoginActivity.this, "Failed to save user data", Toast.LENGTH_SHORT).show();
-            }
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+
+        // First, get existing data
+        usersRef.get().addOnSuccessListener(snapshot -> {
+            Map<String, Object> userData = new HashMap<>();
+
+            // Update only name and email from Google
+            userData.put("name", user.getDisplayName());
+            userData.put("email", user.getEmail());
+
+            // Preserve existing data if present, otherwise default
+            userData.put("phone", snapshot.hasChild("phone") ? snapshot.child("phone").getValue(String.class) : "");
+            userData.put("about", snapshot.hasChild("about") ? snapshot.child("about").getValue(String.class) : "");
+            userData.put("profileImage", snapshot.hasChild("profileImage") ? snapshot.child("profileImage").getValue(String.class) : "");
+
+            // Save back to database
+            usersRef.updateChildren(userData).addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "Failed to save user data", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }).addOnFailureListener(e -> {
+            Toast.makeText(LoginActivity.this, "Failed to load existing user data", Toast.LENGTH_SHORT).show();
         });
     }
+
+
+
 }

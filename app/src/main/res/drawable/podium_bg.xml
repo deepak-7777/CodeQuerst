@@ -1,0 +1,11 @@
+<!-- res/drawable/podium_bg.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="#FFFFFF"/>   <!-- Background color (white, ya jo bhi chahiye) -->
+    <corners android:radius="12dp"/>   <!-- Round corner -->
+    <stroke
+        android:width="2dp"
+        android:color="#CCCCCC"/>      <!-- Border -->
+
+</shape>

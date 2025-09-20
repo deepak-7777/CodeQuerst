@@ -13,20 +13,17 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
 import com.example.codequerst.Model.Question;
+import com.example.codequerst.Model.UserScore;
 import com.example.codequerst.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -41,6 +38,9 @@ public class ResultActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private DatabaseReference usersRef;
+
+    private long quizStartTime;
+    private long quizEndTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,20 +62,29 @@ public class ResultActivity extends AppCompatActivity {
         // Get quiz data from QuizActivity
         questionList = (ArrayList<Question>) getIntent().getSerializableExtra("questionList");
         userAnswers = (HashMap<Integer, Integer>) getIntent().getSerializableExtra("userAnswers");
+        quizStartTime = getIntent().getLongExtra("quizStartTime", System.currentTimeMillis());
+        quizEndTime = getIntent().getLongExtra("quizEndTime", System.currentTimeMillis());
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
 
         if (questionList != null && userAnswers != null) {
-            calculateAndDisplayResult();
+            int correct = calculateAndDisplayResult();
+
+            // Save leaderboard for Google users only
+            if (user != null && user.getEmail() != null) { // Email null means Guest
+                saveLeaderboard(user, correct);
+            }
+        } else {
+            setDefaultProfileImage("U");
         }
 
         // Load profile info
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-            String uid = user.getUid();
-            usersRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+        if (user != null && user.getEmail() != null) {
+            usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
             loadUserProfile();
         } else {
-            setDefaultProfileImage("U"); // fallback
+            setDefaultProfileImage("U");
         }
 
         // Status bar styling
@@ -96,7 +105,8 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 
-    private void calculateAndDisplayResult() {
+    // Returns number of correct answers
+    private int calculateAndDisplayResult() {
         int totalQ = questionList.size();
         int correct = 0;
 
@@ -104,21 +114,44 @@ public class ResultActivity extends AppCompatActivity {
             Question q = questionList.get(i);
             if (userAnswers.containsKey(i)) {
                 int userAns = userAnswers.get(i);
-                if (userAns == q.getAnswer()) { // use getAnswer() instead of getCorrectAns()
+                if (userAns == q.getAnswer()) {
                     correct++;
                 }
             }
         }
 
-        tvCorrectAnswers.setText("Correct Answer " + correct);
+        tvCorrectAnswers.setText("Correct Answers " + correct);
         tvTotalQuestions.setText(" / " + totalQ);
+        return correct;
     }
 
+    private void saveLeaderboard(FirebaseUser user, int correctAnswers) {
+        String uid = user.getUid();
+        String name = (user.getDisplayName() != null) ? user.getDisplayName() : "User";
+        String profileImage = (user.getPhotoUrl() != null) ? user.getPhotoUrl().toString() : "";
+
+        long totalTime = quizEndTime - quizStartTime;
+        long timestamp = System.currentTimeMillis();
+
+        UserScore userScore = new UserScore();
+        userScore.setName(name);
+        userScore.setProfileImage(profileImage);
+        userScore.setCorrectAnswers(correctAnswers);
+        userScore.setTotalTime(totalTime);
+        userScore.setTimestamp(timestamp);
+
+        DatabaseReference leaderboardRef = FirebaseDatabase.getInstance().getReference("leaderboard").child(uid);
+        leaderboardRef.setValue(userScore).addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Toast.makeText(ResultActivity.this, "Leaderboard update failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void loadUserProfile() {
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
                 String name = "";
                 String imageUrl = "";
 
@@ -167,10 +200,10 @@ public class ResultActivity extends AppCompatActivity {
 
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(0xFF6200EE); // background color
+        paint.setColor(0xFF6200EE);
         canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint);
 
-        paint.setColor(Color.WHITE); // text color
+        paint.setColor(Color.WHITE);
         paint.setTextSize(48f);
         paint.setTextAlign(Paint.Align.CENTER);
 
