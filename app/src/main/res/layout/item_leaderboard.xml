@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="60dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:padding="8dp"
+    android:paddingHorizontal="8dp"
     android:gravity="center_vertical"
     android:background="@drawable/rounded_ranking"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="9dp"
     android:elevation="2dp">
 
     <!-- Rank Number -->

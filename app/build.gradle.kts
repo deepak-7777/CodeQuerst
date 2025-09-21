@@ -63,4 +63,6 @@ dependencies {
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     ////   homeActivity mai refresh button ke liye
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    ///    Splash activity
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

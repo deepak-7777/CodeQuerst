@@ -13,7 +13,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -43,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     ChipNavigationBar chipNavigationBar;
     ScrollView homeScrollView;
     ShapeableImageView profileImage;
-    TextView userName;
+    TextView userName, tvPoints;
     SharedPreferences sharedPreferences;
     FirebaseAuth firebaseAuth;
     DatabaseReference usersRef;
@@ -59,32 +58,32 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         c = findViewById(R.id.c);
-        cpp= findViewById(R.id.cpp);
+        cpp = findViewById(R.id.cpp);
         python = findViewById(R.id.python);
         java = findViewById(R.id.java);
         kotlin = findViewById(R.id.kotlin);
-        javaScript= findViewById(R.id.javaScript);
+        javaScript = findViewById(R.id.javaScript);
         homeScrollView = findViewById(R.id.homeScrollView);
         chipNavigationBar = findViewById(R.id.buttonNavigation);
-//        MainBtn = findViewById(R.id.MainBtn);
         profileImage = findViewById(R.id.imageView2);
         userName = findViewById(R.id.textView5);
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        tvPoints = findViewById(R.id.rankPointHome);
 
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         firebaseAuth = FirebaseAuth.getInstance();
 
         loadUserProfile();
+        loadUserPoints(); //  Points load karna
+
         setupNetworkReceiver();
-
-//        MainBtn.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, MainActivity.class)));
-
         bottomNavigation();
 
         profileImage.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, ProfileActivity.class)));
 
         swipeRefresh.setOnRefreshListener(() -> {
             loadUserProfile();
+            loadUserPoints(); // Refresh par points bhi reload
             swipeRefresh.setRefreshing(false);
         });
 
@@ -94,7 +93,48 @@ public class HomeActivity extends AppCompatActivity {
         java.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, JavaActivity.class)));
         kotlin.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, KotlinActivity.class)));
         javaScript.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, JavaScriptActivity.class)));
+    }
 
+    private void loadUserPoints() {
+        boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
+        if (isGuest) {
+            // Guest ke liye kuch bhi nahi dikhana
+            tvPoints.setVisibility(View.GONE);
+            return;
+        }
+
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null && !currentUser.isAnonymous()) {
+            String uid = currentUser.getUid();
+            DatabaseReference leaderboardRef = FirebaseDatabase.getInstance().getReference("leaderboard").child(uid);
+
+            leaderboardRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        Integer correctAnswers = snapshot.child("correctAnswers").getValue(Integer.class);
+                        if (correctAnswers != null) {
+                            tvPoints.setText(correctAnswers + " pts");
+                            tvPoints.setVisibility(View.VISIBLE);
+                        } else {
+                            tvPoints.setText("0 pts");
+                            tvPoints.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        tvPoints.setText("0 pts");
+                        tvPoints.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    tvPoints.setText("0 pts");
+                    tvPoints.setVisibility(View.VISIBLE);
+                }
+            });
+        } else {
+            tvPoints.setVisibility(View.GONE);
+        }
     }
 
     private void setupNetworkReceiver() {
@@ -129,7 +169,6 @@ public class HomeActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.remove("offline_name");
                         editor.apply();
-                        // Reload profile after syncing
                         loadUserProfile();
                     }
                 });
@@ -145,8 +184,6 @@ public class HomeActivity extends AppCompatActivity {
             String name = sharedPreferences.getString("name", "Guest User");
             userName.setText(name);
             setDefaultProfileImage(name);
-
-            // Guest hamesha Welcome
             welcomeText.setText("Welcome");
 
             prefListener = (prefs, key) -> {
@@ -191,7 +228,6 @@ public class HomeActivity extends AppCompatActivity {
                             }
                         }
 
-                        // Google login welcome logic
                         boolean isFirstTime = sharedPreferences.getBoolean("google_first_time", true);
                         if (isFirstTime) {
                             welcomeText.setText("Welcome");
@@ -209,8 +245,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
     private void setDefaultProfileImage(String fullName) {
         if (fullName == null || fullName.isEmpty()) fullName = "U";

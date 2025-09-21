@@ -70,12 +70,6 @@ public class LoginActivity extends AppCompatActivity {
 
         btnGoogle.setOnClickListener(v -> signIn());
 
-//        btnGuest.setOnClickListener(v -> {
-//            saveGuestProfile(); // sirf local save
-//            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-//            finish();
-//        });
-
         btnGuest.setOnClickListener(v -> {
             auth.signInAnonymously().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -95,8 +89,6 @@ public class LoginActivity extends AppCompatActivity {
             });
         });
 
-
-
         // Styling the status bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -114,16 +106,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-
-//    private void saveGuestProfile() {
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putBoolean("isGuest", true);
-//        editor.putString("name", "Guest User");
-//        editor.putString("email", "guest@example.com");
-//        editor.putString("phone", "");
-//        editor.putString("about", "");
-//        editor.apply();
-//    }
 
     private boolean isDarkModeOn() {
         int nightModeFlags =
@@ -174,31 +156,24 @@ public class LoginActivity extends AppCompatActivity {
 
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
-        // First, get existing data
         usersRef.get().addOnSuccessListener(snapshot -> {
             Map<String, Object> userData = new HashMap<>();
 
-            // Update only name and email from Google
-            userData.put("name", user.getDisplayName());
+            // ✅ Name only set if Firebase me empty hai
+            if (!snapshot.hasChild("name") || snapshot.child("name").getValue(String.class).isEmpty()) {
+                userData.put("name", user.getDisplayName() != null ? user.getDisplayName() : "User");
+            }
+
+            // Email always save from Google
             userData.put("email", user.getEmail());
 
-            // Preserve existing data if present, otherwise default
+            // Preserve or default other fields
             userData.put("phone", snapshot.hasChild("phone") ? snapshot.child("phone").getValue(String.class) : "");
             userData.put("about", snapshot.hasChild("about") ? snapshot.child("about").getValue(String.class) : "");
             userData.put("profileImage", snapshot.hasChild("profileImage") ? snapshot.child("profileImage").getValue(String.class) : "");
 
-            // Save back to database
-            usersRef.updateChildren(userData).addOnCompleteListener(task -> {
-                if (!task.isSuccessful()) {
-                    Toast.makeText(LoginActivity.this, "Failed to save user data", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        }).addOnFailureListener(e -> {
-            Toast.makeText(LoginActivity.this, "Failed to load existing user data", Toast.LENGTH_SHORT).show();
+            usersRef.updateChildren(userData);
         });
     }
-
-
 
 }

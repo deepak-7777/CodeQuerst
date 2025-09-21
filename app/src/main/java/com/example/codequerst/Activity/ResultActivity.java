@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.codequerst.Model.Question;
@@ -21,16 +22,16 @@ import com.example.codequerst.Model.UserScore;
 import com.example.codequerst.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class ResultActivity extends AppCompatActivity {
 
     private Button btnExploreMore;
-    private TextView tvCorrectAnswers, tvTotalQuestions, tvName;
+    private TextView tvCorrectAnswers, tvTotalQuestions, tvName, tvRank;
     private ImageView imgProfile;
 
     private ArrayList<Question> questionList;
@@ -41,6 +42,8 @@ public class ResultActivity extends AppCompatActivity {
 
     private long quizStartTime;
     private long quizEndTime;
+
+    private String currentUid; // to track logged-in user
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +56,14 @@ public class ResultActivity extends AppCompatActivity {
         imgProfile = findViewById(R.id.imgProfile);
         btnExploreMore = findViewById(R.id.btnExploreMore);
         tvName = findViewById(R.id.tvName);
+        tvRank = findViewById(R.id.tvRank);
 
         btnExploreMore.setOnClickListener(v -> {
             startActivity(new android.content.Intent(ResultActivity.this, HomeActivity.class));
             finish();
         });
 
-        // Get quiz data from QuizActivity
+        // Get quiz data
         questionList = (ArrayList<Question>) getIntent().getSerializableExtra("questionList");
         userAnswers = (HashMap<Integer, Integer>) getIntent().getSerializableExtra("userAnswers");
         quizStartTime = getIntent().getLongExtra("quizStartTime", System.currentTimeMillis());
@@ -67,12 +71,13 @@ public class ResultActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
+        currentUid = (user != null) ? user.getUid() : null;
 
         if (questionList != null && userAnswers != null) {
             int correct = calculateAndDisplayResult();
 
             // Save leaderboard for Google users only
-            if (user != null && user.getEmail() != null) { // Email null means Guest
+            if (user != null && user.getEmail() != null) {
                 saveLeaderboard(user, correct);
             }
         } else {
@@ -83,6 +88,8 @@ public class ResultActivity extends AppCompatActivity {
         if (user != null && user.getEmail() != null) {
             usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
             loadUserProfile();
+            // Leaderboard से rank calculate करना
+            loadAndSetRank();
         } else {
             setDefaultProfileImage("U");
         }
@@ -144,6 +151,53 @@ public class ResultActivity extends AppCompatActivity {
         leaderboardRef.setValue(userScore).addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Toast.makeText(ResultActivity.this, "Leaderboard update failed", Toast.LENGTH_SHORT).show();
+            } else {
+                // leaderboard update hone ke baad rank reload karo
+                loadAndSetRank();
+            }
+        });
+    }
+
+    private void loadAndSetRank() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("leaderboard");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<UserScore> allUsers = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    UserScore u = child.getValue(UserScore.class);
+                    if (u != null) {
+                        u.setUid(child.getKey());
+                        allUsers.add(u);
+                    }
+                }
+
+                // sorting logic same as RankingFragment
+                Collections.sort(allUsers, (u1, u2) -> {
+                    if (u2.getCorrectAnswers() != u1.getCorrectAnswers()) {
+                        return u2.getCorrectAnswers() - u1.getCorrectAnswers();
+                    } else if (u1.getTotalTime() != u2.getTotalTime()) {
+                        return Long.compare(u1.getTotalTime(), u2.getTotalTime());
+                    } else {
+                        return Long.compare(u1.getTimestamp(), u2.getTimestamp());
+                    }
+                });
+
+                if (currentUid != null) {
+                    for (int i = 0; i < allUsers.size(); i++) {
+                        if (allUsers.get(i).getUid().equals(currentUid)) {
+                            int rank = i + 1;
+                            tvRank.setText("Rank " + rank);
+                            return;
+                        }
+                    }
+                }
+                tvRank.setText("Rank -");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                tvRank.setText("Rank -");
             }
         });
     }

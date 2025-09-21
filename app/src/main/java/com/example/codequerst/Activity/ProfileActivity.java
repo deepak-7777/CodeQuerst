@@ -21,6 +21,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -50,7 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView profileImage, ivEditImage;
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient gsc;
-    private DatabaseReference usersRef;
+    private DatabaseReference usersRef, leaderboardRef;
     private String uid;
     private TextView backProfile;
     private static final int PICK_IMAGE_REQUEST = 101;
@@ -82,23 +84,18 @@ public class ProfileActivity extends AppCompatActivity {
             Intent intent = new Intent(ProfileActivity.this, ProfileViewActivity.class);
 
             if (selectedImageUri != null) {
-                // Agar user ne gallery/Cloudinary se image set ki hai
                 intent.putExtra("imageUri", selectedImageUri.toString());
             } else {
-                // Agar default initials ya guest image hai, bitmap ke liye
                 profileImage.setDrawingCacheEnabled(true);
                 Bitmap bitmap = profileImage.getDrawingCache();
-                // Bitmap ko pass karne ke liye compress karke byte array me convert karenge
                 java.io.ByteArrayOutputStream stream = new java.io.ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] byteArray = stream.toByteArray();
                 intent.putExtra("imageBitmap", byteArray);
                 profileImage.setDrawingCacheEnabled(false);
             }
-
             startActivity(intent);
         });
-
 
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -112,6 +109,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (!isGuest) {
             uid = user.getUid();
             usersRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            leaderboardRef = FirebaseDatabase.getInstance().getReference("leaderboard").child(uid);
         }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -186,7 +184,6 @@ public class ProfileActivity extends AppCompatActivity {
                                 .remove("offline_phone")
                                 .remove("offline_about")
                                 .apply();
-//                        Toast.makeText(this, "Profile synced!", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -194,7 +191,14 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserProfile() {
+        LinearLayout loadingLayout = findViewById(R.id.loadingProfile);
+        ScrollView scrollView = findViewById(R.id.scrollView);
+
+        loadingLayout.setVisibility(View.VISIBLE);
+        scrollView.setVisibility(View.GONE);
+
         if (isGuest) {
+            // Guest user
             String name = sharedPreferences.getString("name", "Guest User");
             String email = sharedPreferences.getString("email", "guest@example.com");
             String phone = sharedPreferences.getString("phone", "");
@@ -206,32 +210,39 @@ public class ProfileActivity extends AppCompatActivity {
             etAddress.setText(about);
 
             setDefaultProfileImage(name);
-        } else {
-            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            if (currentUser == null) return;
 
+            loadingLayout.setVisibility(View.GONE);
+            scrollView.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser == null) return;
+
+        // 1️⃣ Check offline_name first (user ne pehle edit kiya)
+        String offlineName = sharedPreferences.getString("offline_name", null);
+        if (offlineName != null && !offlineName.isEmpty()) {
+            etFirstName.setText(offlineName);
+            setDefaultProfileImage(offlineName);
+
+            // Load remaining fields from Firebase, ignore name
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    String name = safeGet(snapshot, "name");
-                    String email = safeGet(snapshot, "email");
-                    String phone = safeGet(snapshot, "phone");
-                    String about = safeGet(snapshot, "about");
+                    etEmail.setText(safeGet(snapshot, "email"));
+                    etPhone.setText(safeGet(snapshot, "phone"));
+                    etAddress.setText(safeGet(snapshot, "about"));
+
                     String imageUrl = safeGet(snapshot, "profileImage");
-
-                    etFirstName.setText(name);
-                    etEmail.setText(email);
-                    etPhone.setText(phone);
-                    etAddress.setText(about);
-
                     if (imageUrl != null && !imageUrl.isEmpty()) {
                         Glide.with(ProfileActivity.this)
                                 .load(imageUrl)
                                 .circleCrop()
                                 .into(profileImage);
-                    } else {
-                        setDefaultProfileImage(name);
                     }
+
+                    loadingLayout.setVisibility(View.GONE);
+                    scrollView.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -239,6 +250,79 @@ public class ProfileActivity extends AppCompatActivity {
                     Toast.makeText(ProfileActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
                 }
             });
+            return; // Offline name exist, Firebase name ignore
+        }
+
+        // 2️⃣ First-time login: offline_name null → use Firebase name or Google name
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String firebaseName = safeGet(snapshot, "name");
+                String finalName;
+
+                if (firebaseName != null && !firebaseName.isEmpty()) {
+                    finalName = firebaseName; // Firebase saved name
+                } else {
+                    finalName = currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User"; // Google name
+                }
+
+                etFirstName.setText(finalName);
+                setDefaultProfileImage(finalName);
+
+                etEmail.setText(safeGet(snapshot, "email"));
+                etPhone.setText(safeGet(snapshot, "phone"));
+                etAddress.setText(safeGet(snapshot, "about"));
+
+                String imageUrl = safeGet(snapshot, "profileImage");
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    Glide.with(ProfileActivity.this)
+                            .load(imageUrl)
+                            .circleCrop()
+                            .into(profileImage);
+                }
+
+                loadingLayout.setVisibility(View.GONE);
+                scrollView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(ProfileActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void saveProfileField(String field, String value) {
+        if (isGuest) {
+            sharedPrefsEditor.putString(field, value).apply();
+            return;
+        }
+
+        // User edit kare → offline_name me save
+        if (field.equals("name")) {
+            sharedPrefsEditor.putString("offline_name", value).apply();
+        }
+
+        // Network available → Firebase update
+        if (isNetworkAvailable()) {
+            Map<String, Object> updateMap = new HashMap<>();
+            updateMap.put(field, value);
+
+            usersRef.updateChildren(updateMap)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Leaderboard update only when user changes name or profile image
+                            if (field.equals("name") || field.equals("profileImage")) {
+                                leaderboardRef.child(field).setValue(value);
+                            }
+                            sendBroadcast(new Intent("PROFILE_UPDATED"));
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
+        } else {
+            // Offline → offline_field save
+            sharedPrefsEditor.putString("offline_" + field, value).apply();
+            sendBroadcast(new Intent("PROFILE_UPDATED"));
         }
     }
 
@@ -286,29 +370,6 @@ public class ProfileActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
-    private void saveProfileField(String field, String value) {
-        if (isGuest) {
-            sharedPrefsEditor.putString(field, value).apply();
-        } else {
-            if (isNetworkAvailable()) {
-                Map<String, Object> updateMap = new HashMap<>();
-                updateMap.put(field, value);
-                usersRef.updateChildren(updateMap)
-                        .addOnCompleteListener(task -> {
-                            // Broadcast send karo fragment ko update karne ke liye
-                            Intent intent = new Intent("PROFILE_UPDATED");
-                            sendBroadcast(intent);
-                        })
-                        .addOnFailureListener(e -> Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
-            } else {
-                sharedPrefsEditor.putString("offline_" + field, value).apply();
-                Intent intent = new Intent("PROFILE_UPDATED");
-                sendBroadcast(intent);
-            }
-        }
-    }
-
-
     private void setDefaultProfileImage(String fullName) {
         if (fullName == null || fullName.isEmpty()) fullName = "U";
         String[] words = fullName.trim().split(" ");
@@ -353,13 +414,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void uploadImageToCloudinary(Uri imageUri) {
-        // For Google-logged-in users
         if (!isGuest && !isNetworkAvailable()) {
             Toast.makeText(ProfileActivity.this, "Please check your network connection", Toast.LENGTH_SHORT).show();
-            return; // Stop further execution
+            return;
         }
 
-        // Proceed with upload
         MediaManager.get().upload(imageUri)
                 .unsigned("my_unsigned_upload")
                 .callback(new UploadCallback() {
@@ -373,13 +432,12 @@ public class ProfileActivity extends AppCompatActivity {
                             if (isNetworkAvailable()) {
                                 usersRef.child("profileImage").setValue(imageUrl)
                                         .addOnCompleteListener(task -> {
-                                            // Broadcast to notify RankingFragment
+                                            leaderboardRef.child("profileImage").setValue(imageUrl);
                                             Intent intent = new Intent("PROFILE_UPDATED");
                                             sendBroadcast(intent);
                                         });
                             } else {
                                 sharedPrefsEditor.putString("offline_profileImage", imageUrl).apply();
-                                // Broadcast even for offline update
                                 Intent intent = new Intent("PROFILE_UPDATED");
                                 sendBroadcast(intent);
                             }
@@ -394,12 +452,8 @@ public class ProfileActivity extends AppCompatActivity {
                 }).dispatch();
     }
 
-
-
-
     private void logout() {
         if (isGuest) {
-            // SharedPreferences clear
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.remove("name");
             editor.remove("email");
@@ -408,16 +462,13 @@ public class ProfileActivity extends AppCompatActivity {
             editor.putBoolean("isGuest", false);
             editor.apply();
 
-            // Firebase anonymous user sign out
             FirebaseAuth.getInstance().signOut();
 
-            // LoginActivity open
             Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         } else {
-            // Google user logout
             firebaseAuth.signOut();
             gsc.signOut().addOnCompleteListener(task -> {
                 Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
@@ -427,7 +478,6 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
     }
-
 
     @Override
     protected void onDestroy() {

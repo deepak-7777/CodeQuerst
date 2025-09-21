@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@color/home_bg"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:text="Guest Mode Active"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/TextColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Message -->
+    <TextView
+        android:id="@+id/dialogMessage"
+        android:text="You’re currently exploring in Guest Mode. 🚀\n\nYou can view the leaderboard, but your name won’t appear here.\n\nSign in with Google to climb the rankings and showcase your skills!"
+        android:textSize="15sp"
+        android:textColor="@color/iconColor"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Buttons row -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnDismiss"
+            style="@android:style/Widget.Button"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:background="@drawable/guest_bg"
+            android:text="Dismiss"
+            android:textSize="17sp"/>
+
+        <!-- Spacer -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSignIn"
+            style="@android:style/Widget.Button"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:background="@drawable/fsub_bg"
+            android:text="Sign in"
+            android:textSize="18sp" />
+    </LinearLayout>
+</LinearLayout>
