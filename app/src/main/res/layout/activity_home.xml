@@ -96,6 +96,7 @@
 
                     <!-- Create Quiz Button -->
                     <LinearLayout
+                        android:id="@+id/createQuiz"
                         android:layout_width="0dp"
                         android:layout_height="130dp"
                         android:layout_weight="1"
@@ -138,7 +139,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Solo Mode"
+                            android:text="Offline Mode"
                             android:textColor="@android:color/white"
                             android:textSize="14sp"
                             android:gravity="center"/>
@@ -162,7 +163,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Multiplayer"
+                            android:text="Play with friends"
                             android:textColor="@android:color/white"
                             android:textSize="14sp"
                             android:gravity="center"/>

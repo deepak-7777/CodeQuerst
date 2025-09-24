@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/home_bg">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/privacyToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="45dp"
+        android:background="@color/home_bg"
+        android:paddingBottom="7dp"
+        app:titleTextAppearance="@style/ToolbarTitleBold">
+
+        <TextView
+            android:id="@+id/backCreateQuiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@drawable/back"
+            android:contentDescription="Back Button"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Quiz"
+            android:textColor="@color/TextColor"
+            android:textStyle="bold"
+            android:textSize="21sp"
+            android:paddingStart="12dp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Search Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="14dp"
+        android:background="@color/home_bg"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:hint="Search Quiz"
+            android:textColor="@color/TextColor"
+            android:textColorHint="@color/TextColor"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:background="@drawable/search_edittext_bg"
+            android:inputType="text"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="8dp"/>
+
+    </LinearLayout>
+
+    <!-- Options: Create Quiz / Join Quiz -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="20dp"
+        android:paddingHorizontal="14dp"
+        android:paddingBottom="20dp"
+        android:weightSum="2">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCreateQuiz"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:background="@drawable/fsub_bg"
+            android:text="Create Quiz"
+            android:layout_marginEnd="10dp"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:textStyle="bold"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnJoinQuiz"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:background="@drawable/fretake_bg"
+            android:text="Join Quiz"
+            android:layout_marginStart="10dp"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

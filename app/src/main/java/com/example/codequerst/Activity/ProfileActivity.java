@@ -219,41 +219,37 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser == null) return;
 
-        // 1️⃣ Check offline_name first (user ne pehle edit kiya)
-        String offlineName = sharedPreferences.getString("offline_name", null);
-        if (offlineName != null && !offlineName.isEmpty()) {
-            etFirstName.setText(offlineName);
-            setDefaultProfileImage(offlineName);
+        // ✅ Agar network off hai → offline data dikhao
+        if (!isNetworkAvailable()) {
+            String name = sharedPreferences.getString("offline_name",
+                    currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User");
+            String email = sharedPreferences.getString("offline_email",
+                    currentUser.getEmail() != null ? currentUser.getEmail() : "");
+            String phone = sharedPreferences.getString("offline_phone", "");
+            String about = sharedPreferences.getString("offline_about", "");
 
-            // Load remaining fields from Firebase, ignore name
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    etEmail.setText(safeGet(snapshot, "email"));
-                    etPhone.setText(safeGet(snapshot, "phone"));
-                    etAddress.setText(safeGet(snapshot, "about"));
+            etFirstName.setText(name);
+            etEmail.setText(email);
+            etPhone.setText(phone);
+            etAddress.setText(about);
 
-                    String imageUrl = safeGet(snapshot, "profileImage");
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
-                        Glide.with(ProfileActivity.this)
-                                .load(imageUrl)
-                                .circleCrop()
-                                .into(profileImage);
-                    }
+            setDefaultProfileImage(name);
 
-                    loadingLayout.setVisibility(View.GONE);
-                    scrollView.setVisibility(View.VISIBLE);
-                }
+            // Agar offline image save hai to wahi lagao
+            String offlineImage = sharedPreferences.getString("offline_profileImage", null);
+            if (offlineImage != null && !offlineImage.isEmpty()) {
+                Glide.with(ProfileActivity.this)
+                        .load(offlineImage)
+                        .circleCrop()
+                        .into(profileImage);
+            }
 
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    Toast.makeText(ProfileActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
-                }
-            });
-            return; // Offline name exist, Firebase name ignore
+            loadingLayout.setVisibility(View.GONE);
+            scrollView.setVisibility(View.VISIBLE);
+            return; // yahi stop kar do
         }
 
-        // 2️⃣ First-time login: offline_name null → use Firebase name or Google name
+        // ✅ Network available → Firebase se load
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -261,9 +257,9 @@ public class ProfileActivity extends AppCompatActivity {
                 String finalName;
 
                 if (firebaseName != null && !firebaseName.isEmpty()) {
-                    finalName = firebaseName; // Firebase saved name
+                    finalName = firebaseName;
                 } else {
-                    finalName = currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User"; // Google name
+                    finalName = currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "User";
                 }
 
                 etFirstName.setText(finalName);
@@ -288,22 +284,26 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError error) {
                 Toast.makeText(ProfileActivity.this, "Failed to load profile", Toast.LENGTH_SHORT).show();
+                loadingLayout.setVisibility(View.GONE);
+                scrollView.setVisibility(View.VISIBLE);
             }
         });
     }
 
+
     private void saveProfileField(String field, String value) {
         if (isGuest) {
+            // Guest user → direct shared prefs me save
             sharedPrefsEditor.putString(field, value).apply();
             return;
         }
 
-        // User edit kare → offline_name me save
+        // Agar user ne name change kiya to offline_name me bhi save
         if (field.equals("name")) {
             sharedPrefsEditor.putString("offline_name", value).apply();
         }
 
-        // Network available → Firebase update
+        // ✅ Network available → Firebase update
         if (isNetworkAvailable()) {
             Map<String, Object> updateMap = new HashMap<>();
             updateMap.put(field, value);
@@ -311,20 +311,26 @@ public class ProfileActivity extends AppCompatActivity {
             usersRef.updateChildren(updateMap)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
+                            // ⭐ Firebase me update success → SharedPreferences me bhi save
+                            sharedPrefsEditor.putString(field, value).apply();
+
                             // Leaderboard update only when user changes name or profile image
                             if (field.equals("name") || field.equals("profileImage")) {
                                 leaderboardRef.child(field).setValue(value);
                             }
+
                             sendBroadcast(new Intent("PROFILE_UPDATED"));
                         }
                     })
-                    .addOnFailureListener(e -> Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
         } else {
-            // Offline → offline_field save
+            // Offline → offline_field save karo
             sharedPrefsEditor.putString("offline_" + field, value).apply();
             sendBroadcast(new Intent("PROFILE_UPDATED"));
         }
     }
+
 
     private String safeGet(DataSnapshot snapshot, String key) {
         return snapshot.child(key).getValue() != null ? snapshot.child(key).getValue(String.class) : "";

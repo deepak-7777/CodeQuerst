@@ -3,4 +3,12 @@
     <string name="default_web_client_id">207714362050-iljhl6q39aj20kehc5abubglmbj6dqv1.apps.googleusercontent.com</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--          for Create_Quiz Activity -->
+    <string-array name="time_options">
+        <item>10 sec</item>
+        <item>12 sec</item>
+        <item>15 sec</item>
+        <item>20 sec</item>
+    </string-array>
 </resources>

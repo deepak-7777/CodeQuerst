@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/home_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/privacyToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="45dp"
+            android:background="@color/home_bg"
+            android:paddingBottom="7dp"
+            app:titleTextAppearance="@style/ToolbarTitleBold">
+
+            <TextView
+                android:id="@+id/finalBackCreateQuiz"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:background="@drawable/back"
+                android:contentDescription="Back Button"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Publish Quiz"
+                android:textColor="@color/TextColor"
+                android:textStyle="bold"
+                android:textSize="21sp"
+                android:paddingStart="12dp" />
+        </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+
+        <!-- Quiz Summary -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quiz Summary"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/TextColor"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingTop="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
+            android:background="@drawable/createquiz_bg"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvQuizTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title: Java Basics"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvQuizTopic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Topic: Java"
+                android:textSize="14sp"
+                android:paddingTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvQuizDifficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Difficulty: Easy"
+                android:textSize="14sp"
+                android:paddingTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvQuestionsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Questions: 5"
+                android:textSize="14sp"
+                android:paddingTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Quiz Code Display -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Quiz Code"
+            android:textColor="@color/TextColor"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="16dp"/>
+        <TextView
+            android:id="@+id/tvQuizCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AB12CD"
+            android:textSize="22sp"
+            android:textColor="@color/iconColor"
+            android:textStyle="bold"
+            android:paddingTop="8dp"/>
+
+        <!-- Copy & Share Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:weightSum="2">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnCopyCode"
+                style="@android:style/Widget.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="37dp"
+                android:background="@drawable/createquiz_bg"
+                android:text="Copy"
+                android:layout_marginEnd="20dp"
+                android:textSize="17sp"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textColor="@color/TextColor" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnShareCode"
+                style="@android:style/Widget.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="37dp"
+                android:background="@drawable/createquiz_bg"
+                android:text="Share"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/TextColor" />
+
+        </LinearLayout>
+
+        <!-- Go to Home Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGoHome"
+            style="@android:style/Widget.Button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/fsub_bg"
+            android:text="Go to Home"
+            android:layout_gravity="center"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginTop="44dp"
+            android:textColor="@color/white" />
+    </LinearLayout>
+    </LinearLayout>
+</ScrollView>

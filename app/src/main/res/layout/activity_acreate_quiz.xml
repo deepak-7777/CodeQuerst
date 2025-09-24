@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/home_bg">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/privacyToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="45dp"
+        android:background="@color/home_bg"
+        app:titleTextAppearance="@style/ToolbarTitleBold">
+
+        <TextView
+            android:id="@+id/backACreateQuiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@drawable/back"
+            android:contentDescription="Back Button"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Quiz Details"
+            android:textColor="@color/TextColor"
+            android:textStyle="bold"
+            android:textSize="21sp"
+            android:paddingStart="12dp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="28dp"
+        android:paddingHorizontal="20dp"
+        android:fadeScrollbars="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Quiz Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quiz Title"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/TextColor"
+                android:textStyle="bold"
+                android:paddingTop="8dp"/>
+
+            <EditText
+                android:id="@+id/etQuizTitle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Enter quiz title"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/createquiz_bg"/>
+
+            <!-- Topic -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Topic"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/TextColor"
+                android:layout_marginStart="5dp"
+                android:paddingTop="16dp"/>
+            <EditText
+                android:id="@+id/etQuizTopic"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Enter topic"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/createquiz_bg"/>
+
+            <!-- Difficulty -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Difficulty"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                android:textStyle="bold"
+                android:textColor="@color/TextColor"
+                android:paddingTop="16dp"/>
+            <RadioGroup
+                android:id="@+id/rgDifficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/rbEasy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Easy" />
+                <RadioButton
+                    android:id="@+id/rbMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Medium"
+                    android:layout_marginStart="16dp"/>
+                <RadioButton
+                    android:id="@+id/rbHard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hard"
+                    android:layout_marginStart="16dp"/>
+            </RadioGroup>
+
+            <!-- Time per Question -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time per question"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/TextColor"
+                android:textStyle="bold"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"/>
+            <Spinner
+                android:id="@+id/spinnerTime"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:entries="@array/time_options"
+                android:spinnerMode="dropdown"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/search_edittext_bg"
+                android:padding="8dp"/>
+
+            <!-- Next Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnNextStep"
+                style="@android:style/Widget.Button"
+                android:layout_width="115dp"
+                android:layout_height="40dp"
+                android:background="@drawable/fsub_bg"
+                android:text="Next"
+                android:layout_gravity="center"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

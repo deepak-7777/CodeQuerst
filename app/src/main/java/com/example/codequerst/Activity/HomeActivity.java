@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
-    LinearLayout c, cpp, python, java, kotlin, javaScript;
+    LinearLayout c, cpp, python, java, kotlin, javaScript, createQuiz;
     ChipNavigationBar chipNavigationBar;
     ScrollView homeScrollView;
     ShapeableImageView profileImage;
@@ -69,6 +69,7 @@ public class HomeActivity extends AppCompatActivity {
         userName = findViewById(R.id.textView5);
         swipeRefresh = findViewById(R.id.swipeRefresh);
         tvPoints = findViewById(R.id.rankPointHome);
+        createQuiz = findViewById(R.id.createQuiz);
 
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -79,6 +80,7 @@ public class HomeActivity extends AppCompatActivity {
         setupNetworkReceiver();
         bottomNavigation();
 
+        createQuiz.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, CreateQuizActivity.class)));
         profileImage.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, ProfileActivity.class)));
 
         swipeRefresh.setOnRefreshListener(() -> {
@@ -181,6 +183,7 @@ public class HomeActivity extends AppCompatActivity {
         TextView welcomeText = findViewById(R.id.textView4);
 
         if (isGuest) {
+            // Guest ke liye direct SharedPreferences
             String name = sharedPreferences.getString("name", "Guest User");
             userName.setText(name);
             setDefaultProfileImage(name);
@@ -202,49 +205,84 @@ public class HomeActivity extends AppCompatActivity {
                 String uid = currentUser.getUid();
                 usersRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
 
-                usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        String name = "User";
-                        if (snapshot.exists()) {
-                            name = snapshot.child("name").getValue(String.class);
-                            String imageUrl = snapshot.child("profileImage").getValue(String.class);
+                // ✅ Step 1: Offline cache load karo
+                String cachedName = sharedPreferences.getString("name", "User");
+                String cachedImage = sharedPreferences.getString("profileImage", "");
+                userName.setText(cachedName);
 
-                            if (name != null) {
-                                if (sharedPreferences.contains("offline_name")) {
-                                    name = sharedPreferences.getString("offline_name", name);
+                if (!cachedImage.isEmpty()) {
+                    Glide.with(HomeActivity.this)
+                            .load(cachedImage)
+                            .circleCrop()
+                            .into(profileImage);
+                } else {
+                    setDefaultProfileImage(cachedName);
+                }
+
+                // ✅ Step 2: Agar network hai to Firebase se refresh karo
+                if (isNetworkAvailable()) {
+                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                String name = snapshot.child("name").getValue(String.class);
+                                String imageUrl = snapshot.child("profileImage").getValue(String.class);
+
+                                if (name != null) {
+                                    userName.setText(name);
+                                    setDefaultProfileImage(name);
                                 }
-                                userName.setText(name);
-                                setDefaultProfileImage(name);
+                                if (imageUrl != null && !imageUrl.isEmpty()) {
+                                    Glide.with(HomeActivity.this)
+                                            .load(imageUrl)
+                                            .circleCrop()
+                                            .into(profileImage);
+                                }
+
+                                // ⭐ Cache update karo
+                                cacheProfileToPrefs(snapshot);
                             }
 
-                            if (imageUrl != null && !imageUrl.isEmpty()) {
-                                Glide.with(HomeActivity.this)
-                                        .load(imageUrl)
-                                        .circleCrop()
-                                        .into(profileImage);
+                            boolean isFirstTime = sharedPreferences.getBoolean("google_first_time", true);
+                            if (isFirstTime) {
+                                welcomeText.setText("Welcome");
+                                sharedPreferences.edit().putBoolean("google_first_time", false).apply();
                             } else {
-                                setDefaultProfileImage(name);
+                                welcomeText.setText("Welcome Back");
                             }
                         }
 
-                        boolean isFirstTime = sharedPreferences.getBoolean("google_first_time", true);
-                        if (isFirstTime) {
-                            welcomeText.setText("Welcome");
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putBoolean("google_first_time", false);
-                            editor.apply();
-                        } else {
-                            welcomeText.setText("Welcome Back");
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            // Agar Firebase fail ho gaya → cached data already visible hai
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) { }
-                });
+                    });
+                } else {
+                    //  Agar network off hai → sirf cached data hi rahega
+                    welcomeText.setText("Welcome Back");
+                }
             }
         }
     }
+
+
+    private void cacheProfileToPrefs(DataSnapshot snapshot) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (snapshot.hasChild("name")) {
+            editor.putString("name", snapshot.child("name").getValue(String.class));
+        }
+        if (snapshot.hasChild("profileImage")) {
+            editor.putString("profileImage", snapshot.child("profileImage").getValue(String.class));
+        }
+        if (snapshot.hasChild("email")) {
+            editor.putString("email", snapshot.child("email").getValue(String.class));
+        }
+        if (snapshot.hasChild("about")) {
+            editor.putString("about", snapshot.child("about").getValue(String.class));
+        }
+        editor.apply();
+    }
+
 
     private void setDefaultProfileImage(String fullName) {
         if (fullName == null || fullName.isEmpty()) fullName = "U";

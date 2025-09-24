@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/home_bg">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/privacyToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="45dp"
+        android:background="@color/home_bg"
+        app:titleTextAppearance="@style/ToolbarTitleBold">
+
+        <TextView
+            android:id="@+id/backBCreateQuiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@drawable/back"
+            android:contentDescription="Back Button"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Questions"
+            android:textColor="@color/TextColor"
+            android:textStyle="bold"
+            android:textSize="21sp"
+            android:paddingStart="12dp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnQuizSubmit"
+            style="@android:style/Widget.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:background="@drawable/createquiz_bg"
+            android:text="Submit"
+            android:layout_gravity="end"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="4dp"
+            android:textColor="@color/TextColor" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:fadeScrollbars="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Question Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Question"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/TextColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingTop="8dp"/>
+            <EditText
+                android:id="@+id/etQuestion"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:hint="Enter question"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/createquiz_bg"/>
+
+            <!-- Options Inputs -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Options"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/TextColor"
+                android:textStyle="bold"
+                android:paddingTop="16dp"/>
+
+            <EditText
+                android:id="@+id/etOption1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Option 1"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/createquiz_bg"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/etOption2"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Option 2"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/createquiz_bg"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/etOption3"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Option 3"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/createquiz_bg"
+                android:layout_marginTop="4dp"/>
+            <EditText
+                android:id="@+id/etOption4"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Option 4"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:background="@drawable/createquiz_bg"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Correct Answer Selection -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Correct Answer"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/TextColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingTop="16dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgCorrectAnswer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbOption1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1" />
+                <RadioButton
+                    android:id="@+id/rbOption2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:layout_marginStart="16dp"/>
+                <RadioButton
+                    android:id="@+id/rbOption3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3"
+                    android:layout_marginStart="16dp"/>
+                <RadioButton
+                    android:id="@+id/rbOption4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4"
+                    android:layout_marginStart="16dp"/>
+            </RadioGroup>
+
+            <!-- Add Question Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAddQuestion"
+                style="@android:style/Widget.Button"
+                android:layout_width="155dp"
+                android:layout_height="40dp"
+                android:background="@drawable/fsub_bg"
+                android:text="Add Question"
+                android:layout_gravity="center"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/white" />
+
+            <!-- RecyclerView to show added questions -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Your Added Questions"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/TextColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingTop="24dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvQuestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -19,7 +19,7 @@ public class SplashActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private SharedPreferences sharedPreferences;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private final long MAX_WAIT_TIME = 4000; // 4 sec max wait
+    private final long MAX_WAIT_TIME = 3000; // 4 sec max wait
     private AtomicBoolean proceed = new AtomicBoolean(false);
     private Runnable timeoutRunnable;
 
@@ -79,7 +79,7 @@ public class SplashActivity extends AppCompatActivity {
             });
 
         } else {
-            // Guest or first time - normal 3s delay
+            // Guest or first time - normal  delay
             handler.postDelayed(() -> {
                 if (proceed.compareAndSet(false, true)) {
                     if (auth.getCurrentUser() != null || isGuest) {
@@ -89,7 +89,7 @@ public class SplashActivity extends AppCompatActivity {
                         finish();
                     }
                 }
-            }, 3000);
+            }, 2000);
         }
     }
 
