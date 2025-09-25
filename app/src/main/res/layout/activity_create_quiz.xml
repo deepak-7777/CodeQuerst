@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -46,19 +47,16 @@
 
         <EditText
             android:id="@+id/etSearch"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_weight="1"
-            android:hint="Search Quiz"
-            android:textColor="@color/TextColor"
-            android:textColorHint="@color/TextColor"
+            android:hint="Search Quiz title"
+            android:textColor="@color/iconColor"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:background="@drawable/search_edittext_bg"
             android:inputType="text"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="8dp"/>
-
     </LinearLayout>
 
     <!-- Options: Create Quiz / Join Quiz -->
@@ -97,8 +95,47 @@
             android:textColor="@color/white"
             android:layout_weight="1"
             android:textStyle="bold"/>
-
     </LinearLayout>
 
+    <!-- SwipeRefreshLayout wrapping RecyclerView -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- ProgressBar -->
+            <ProgressBar
+                android:id="@+id/CreateQuizProgressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Created Quizzes"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/TextColor"
+                android:paddingBottom="8dp" />
+
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvShowQuiz"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="8dp"/>
+        </LinearLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

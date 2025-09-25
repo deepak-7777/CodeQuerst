@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <!-- Toolbar -->
@@ -20,13 +20,13 @@
             android:paddingBottom="7dp"
             app:titleTextAppearance="@style/ToolbarTitleBold">
 
-            <TextView
-                android:id="@+id/finalBackCreateQuiz"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/back"
-                android:contentDescription="Back Button"/>
+<!--            <TextView-->
+<!--                android:id="@+id/finalBackCreateQuiz"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:padding="5dp"-->
+<!--                android:background="@drawable/back"-->
+<!--                android:contentDescription="Back Button"/>-->
 
             <TextView
                 android:layout_width="match_parent"
@@ -40,8 +40,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:padding="16dp"
+        android:gravity="center"
+        android:layout_gravity="center"
         android:orientation="vertical">
 
 

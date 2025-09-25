@@ -42,6 +42,8 @@
     <color name="TextColor">#000000</color>
     <color name="BoxColor">#FFFFFF</color>
     <color name="home_bg">#EFEBEB</color>
+    <color name="dividerColor">#BDBDBD</color> <!-- light grey -->
+
 
 </resources>
 

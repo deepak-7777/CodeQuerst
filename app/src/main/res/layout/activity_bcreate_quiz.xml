@@ -32,18 +32,14 @@
             android:textSize="21sp"
             android:paddingStart="12dp" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnQuizSubmit"
-            style="@android:style/Widget.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:background="@drawable/createquiz_bg"
-            android:text="Submit"
+        <TextView
+            android:id="@+id/btnCreateQuizSubmit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="5dp"
             android:layout_gravity="end"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:layout_marginEnd="4dp"
-            android:textColor="@color/TextColor" />
+            android:background="@drawable/tick"
+            android:contentDescription="Back Button"/>
     </androidx.appcompat.widget.Toolbar>
 
     <!-- Scrollable Content -->
@@ -182,18 +178,8 @@
                 android:layout_marginTop="16dp"
                 android:textColor="@color/white" />
 
-            <!-- RecyclerView to show added questions -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Show Your Added Questions"
-                android:layout_marginStart="5dp"
-                android:textColor="@color/TextColor"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:paddingTop="24dp"/>
-
             <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="16dp"
                 android:id="@+id/rvQuestions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

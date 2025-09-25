@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@color/home_bg"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/joinQuizTitle"
+        android:text="Join Quiz Mode"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/TextColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Message -->
+    <TextView
+        android:id="@+id/joinQuizMessage"
+        android:text="Got a code from someone? Enter it here to join the quiz and have fun!"
+        android:textSize="15sp"
+        android:textColor="@color/iconColor"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/joinQuizText"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:hint="Enter Quiz Code"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/createquiz_bg"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:textColor="@color/iconColor"
+        android:inputType="text" />
+
+    <!-- Buttons row -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/joinQuizDismiss"
+            style="@android:style/Widget.Button"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:background="@drawable/fsub_bg"
+            android:text="Dismiss"
+            android:textSize="17sp"/>
+
+        <!-- Spacer -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/joinQuizStart"
+            style="@android:style/Widget.Button"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:background="@drawable/fretake_bg"
+            android:text="Join &amp; Start"
+            android:textSize="18sp" />
+    </LinearLayout>
+</LinearLayout>

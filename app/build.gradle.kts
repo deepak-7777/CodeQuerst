@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.codequerst"
+    namespace = "com.vmpk.codequerst"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.codequerst"
+        applicationId = "com.vmpk.codequerst"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

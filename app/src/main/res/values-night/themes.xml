@@ -14,4 +14,6 @@
     <color name="TextColor">#FFFFFF</color>  <!-- All text -->
     <color name="BoxColor">#454343</color>  <!-- Card View from HomeActivity -->
     <color name="home_bg">#161616</color>  <!-- Bg from  HomeActivity -->
+    <color name="dividerColor">#E0E0E0</color> <!-- very light grey -->
+
 </resources>

@@ -11,4 +11,7 @@
     <color name="darkGrey">#616161</color>
     <color name="orange">#DC6F31</color>
     <color name="red">#FF0000</color>
+    <color name="correctAnswerColor">#4CAF50</color>
+    <color name="teal_700">#018786</color>
+
 </resources>

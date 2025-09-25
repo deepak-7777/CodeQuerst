@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:207714362050:android:59a8f2f9c771fbf808115b",
+        "mobilesdk_app_id": "1:207714362050:android:2eb65f7da461181808115b",
         "android_client_info": {
-          "package_name": "com.example.codequerst"
+          "package_name": "com.vmpk.codequerst"
         }
       },
       "oauth_client": [
         {
-          "client_id": "207714362050-97fqomd72bu1en0lc0i8su69r3vivcoq.apps.googleusercontent.com",
+          "client_id": "207714362050-h12nk935ir622dgmbhims2tu0d8c7shv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.codequerst",
+            "package_name": "com.vmpk.codequerst",
             "certificate_hash": "805af4d55dfe6546bf0e8e89ea8a2bb93c2190e2"
           }
         },

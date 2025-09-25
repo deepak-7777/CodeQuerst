@@ -8,6 +8,16 @@
     android:background="#DFFFD6"
     tools:context=".Activity.LoginActivity">
 
+    <ProgressBar
+        android:id="@+id/loginProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/correctAnswerColor"/>
+
     <!-- Title Text -->
     <TextView
         android:id="@+id/titleText"

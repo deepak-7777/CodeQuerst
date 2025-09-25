@@ -1,0 +1,10 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvQuizItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:text="Quiz 1: (Sample Title)"
+    android:layout_marginBottom="8dp"
+    android:textSize="18sp"
+    android:textColor="@color/TextColor"
+    android:background="@drawable/createquiz_bg"/>

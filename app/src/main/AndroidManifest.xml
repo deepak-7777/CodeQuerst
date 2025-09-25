@@ -12,6 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CodeQuerst">
         <activity
+            android:name=".Activity.BJoinQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.AJoinQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.JoinQuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.QuizDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.FinalCreateQuizActivity"
             android:exported="false" />
         <activity
