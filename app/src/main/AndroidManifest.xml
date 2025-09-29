@@ -12,6 +12,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CodeQuerst">
         <activity
+            android:name=".Activity.ChooseKotlinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChooseJavaScriptActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChooseJavaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChoosePythonActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChooseCppActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChooseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.RankingViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.BJoinQuizActivity"
             android:exported="false" />
         <activity

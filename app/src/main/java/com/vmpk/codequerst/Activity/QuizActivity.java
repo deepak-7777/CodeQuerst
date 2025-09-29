@@ -36,7 +36,7 @@ import java.util.List;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private TextView tvQuestion, tvCounter, tvCTitle, tvTimer;
+    private TextView tvQuestion, tvCounter, tvCTitle, tvTimer, cMessage;
     private RadioGroup radioGroup;
     private RadioButton option1, option2, option3, option4;
     private LinearLayout loadingLayout;
@@ -55,8 +55,7 @@ public class QuizActivity extends AppCompatActivity {
     private long quizEndTime;
 
     private DatabaseReference ref;
-    private String language, topic;
-    private int numQuestions = 0;
+    private String language, topic, difficulty;
 
     private CountDownTimer countDownTimer;
     private boolean timerRunning = false;
@@ -66,6 +65,8 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        // 1️ Initialize views
+        cMessage = findViewById(R.id.CMessage);
         tvQuestion = findViewById(R.id.tvQuestion);
         tvCounter = findViewById(R.id.tvCounter);
         tvCTitle = findViewById(R.id.CTitle);
@@ -79,16 +80,30 @@ public class QuizActivity extends AppCompatActivity {
         tvTimer = findViewById(R.id.tvTimer);
         circularProgressIndicator = findViewById(R.id.circularProgressIndicator);
 
+        // 2️ Fetch Intent data
         language = getIntent().getStringExtra("language");
         topic = getIntent().getStringExtra("topic");
-        numQuestions = getIntent().getIntExtra("numQuestions", 0);
+        difficulty = getIntent().getStringExtra("difficulty"); // new
 
-        if (language == null || topic == null) {
+        if (language == null || topic == null || difficulty == null) {
             Toast.makeText(this, "Invalid quiz data!", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
+        if (difficulty != null) {
+            // First letter capital, rest lowercase
+            String displayDifficulty = difficulty.substring(0,1).toUpperCase() + difficulty.substring(1).toLowerCase();
+            cMessage.setText("(" + displayDifficulty + ")");
+        }
+
+        // 3️ Firebase reference now includes difficulty
+        ref = FirebaseDatabase.getInstance().getReference("questions")
+                .child(language)
+                .child(topic)
+                .child(difficulty);
+
+        // 4️ Hide quiz views initially
         loadingLayout.setVisibility(View.VISIBLE);
         tvQuestion.setVisibility(View.GONE);
         radioGroup.setVisibility(View.GONE);
@@ -96,22 +111,21 @@ public class QuizActivity extends AppCompatActivity {
         tvCTitle.setVisibility(View.GONE);
         circularProgressIndicator.setVisibility(View.GONE);
         tvTimer.setVisibility(View.GONE);
+        cMessage.setVisibility(View.GONE);
 
-        ref = FirebaseDatabase.getInstance().getReference("questions")
-                .child(language)
-                .child(topic);
-
+        // 5️ Load topic title and questions
         loadTopicTitle();
         loadQuestions();
 
+        // 6️ Option click listeners
         option1.setOnClickListener(v -> checkAnswer(1, option1));
         option2.setOnClickListener(v -> checkAnswer(2, option2));
         option3.setOnClickListener(v -> checkAnswer(3, option3));
         option4.setOnClickListener(v -> checkAnswer(4, option4));
 
-        quizStartTime = System.currentTimeMillis(); // start of quiz
+        quizStartTime = System.currentTimeMillis();
 
-        // status bar styling
+        // 7️ Status bar styling
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.getDecorView().setSystemUiVisibility(
@@ -137,7 +151,7 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void loadTopicTitle() {
-        ref.child("title").addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.getParent().child("title").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 tvCTitle.setText(snapshot.exists() ? snapshot.getValue(String.class) : topic);
@@ -164,9 +178,6 @@ public class QuizActivity extends AppCompatActivity {
 
                 if (!questionList.isEmpty()) {
                     Collections.shuffle(questionList);
-                    if (numQuestions > 0 && numQuestions < questionList.size()) {
-                        questionList = new ArrayList<>(questionList.subList(0, numQuestions));
-                    }
                     currentIndex = 0;
                     showQuestion(currentIndex);
 
@@ -177,6 +188,7 @@ public class QuizActivity extends AppCompatActivity {
                     tvCTitle.setVisibility(View.VISIBLE);
                     circularProgressIndicator.setVisibility(View.VISIBLE);
                     tvTimer.setVisibility(View.VISIBLE);
+                    cMessage.setVisibility(View.VISIBLE);
 
                     startTimer();
                 } else {
@@ -344,6 +356,7 @@ public class QuizActivity extends AppCompatActivity {
         i.putExtra("quizEndTime", quizEndTime);
         i.putExtra("totalTime", totalTime);
         i.putExtra("correctAnswers", correctAnswers);
+        i.putExtra("difficulty", difficulty);
         startActivity(i);
         finish();
     }

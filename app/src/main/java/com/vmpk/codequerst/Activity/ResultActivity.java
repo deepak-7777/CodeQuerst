@@ -14,8 +14,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
 import com.vmpk.codequerst.Model.Question;
 import com.vmpk.codequerst.Model.UserScore;
@@ -23,27 +25,25 @@ import com.vmpk.codequerst.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ResultActivity extends AppCompatActivity {
 
     private Button btnExploreMore;
     private TextView tvCorrectAnswers, tvTotalQuestions, tvName, tvRank;
     private ImageView imgProfile;
-
     private ArrayList<Question> questionList;
     private HashMap<Integer, Integer> userAnswers;
-
     private FirebaseAuth firebaseAuth;
     private DatabaseReference usersRef;
-
     private long quizStartTime;
     private long quizEndTime;
-
-    private String currentUid; // to track logged-in user
+    private String currentUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,6 @@ public class ResultActivity extends AppCompatActivity {
             finish();
         });
 
-        // Get quiz data
         questionList = (ArrayList<Question>) getIntent().getSerializableExtra("questionList");
         userAnswers = (HashMap<Integer, Integer>) getIntent().getSerializableExtra("userAnswers");
         quizStartTime = getIntent().getLongExtra("quizStartTime", System.currentTimeMillis());
@@ -75,8 +74,6 @@ public class ResultActivity extends AppCompatActivity {
 
         if (questionList != null && userAnswers != null) {
             int correct = calculateAndDisplayResult();
-
-            // Save leaderboard for Google users only
             if (user != null && user.getEmail() != null) {
                 saveLeaderboard(user, correct);
             }
@@ -84,11 +81,9 @@ public class ResultActivity extends AppCompatActivity {
             setDefaultProfileImage("U");
         }
 
-        // Load profile info
         if (user != null && user.getEmail() != null) {
             usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
             loadUserProfile();
-            // Leaderboard से rank calculate करना
             loadAndSetRank();
         } else {
             setDefaultProfileImage("U");
@@ -112,21 +107,16 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 
-    // Returns number of correct answers
     private int calculateAndDisplayResult() {
         int totalQ = questionList.size();
         int correct = 0;
-
         for (int i = 0; i < questionList.size(); i++) {
             Question q = questionList.get(i);
             if (userAnswers.containsKey(i)) {
                 int userAns = userAnswers.get(i);
-                if (userAns == q.getAnswer()) {
-                    correct++;
-                }
+                if (userAns == q.getAnswer()) correct++;
             }
         }
-
         tvCorrectAnswers.setText("Correct Answers " + correct);
         tvTotalQuestions.setText(" / " + totalQ);
         return correct;
@@ -136,24 +126,76 @@ public class ResultActivity extends AppCompatActivity {
         String uid = user.getUid();
         String name = (user.getDisplayName() != null) ? user.getDisplayName() : "User";
         String profileImage = (user.getPhotoUrl() != null) ? user.getPhotoUrl().toString() : "";
-
         long totalTime = quizEndTime - quizStartTime;
         long timestamp = System.currentTimeMillis();
 
-        UserScore userScore = new UserScore();
-        userScore.setName(name);
-        userScore.setProfileImage(profileImage);
-        userScore.setCorrectAnswers(correctAnswers);
-        userScore.setTotalTime(totalTime);
-        userScore.setTimestamp(timestamp);
+        String language = getIntent().getStringExtra("language");
+        String topic = getIntent().getStringExtra("topic");
+        String difficulty = getIntent().getStringExtra("difficulty");
 
+        if (language == null || topic == null || difficulty == null) {
+            Toast.makeText(this, "Cannot save score: missing quiz info", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String topicKey = language + "_" + topic + "_" + difficulty;
         DatabaseReference leaderboardRef = FirebaseDatabase.getInstance().getReference("leaderboard").child(uid);
-        leaderboardRef.setValue(userScore).addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
+
+        leaderboardRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UserScore userScore;
+                if (snapshot.exists()) {
+                    userScore = snapshot.getValue(UserScore.class);
+                    if (userScore == null) userScore = new UserScore();
+                } else {
+                    userScore = new UserScore();
+                }
+
+                userScore.setName(name);
+                userScore.setProfileImage(profileImage);
+                userScore.setTimestamp(timestamp);
+                userScore.setTotalTime(userScore.getTotalTime() + totalTime);
+
+                // Topics update
+                if (userScore.getTopics() == null) userScore.setTopics(new HashMap<>());
+                Map<String, Integer> topicsMap = userScore.getTopics();
+                int pointsToAdd = topicsMap.containsKey(topicKey) ? 0 : correctAnswers;
+                topicsMap.put(topicKey, correctAnswers);
+                userScore.setTopics(topicsMap);
+
+                // Total points (all-time)
+                userScore.setTotalPoints(userScore.getTotalPoints() + pointsToAdd);
+
+                // Quizzes map for weekly
+                if (userScore.getQuizzes() == null) userScore.setQuizzes(new HashMap<>());
+                Map<String, UserScore.QuizAttempt> quizMap = userScore.getQuizzes();
+                String quizId = topicKey + "_" + timestamp;
+                quizMap.put(quizId, new UserScore.QuizAttempt(correctAnswers, timestamp));
+                userScore.setQuizzes(quizMap);
+
+                // Weekly points calculation (last 7 days)
+                long oneWeekAgo = System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000;
+                int weeklySum = 0;
+                for (UserScore.QuizAttempt attempt : quizMap.values()) {
+                    if (attempt.getTimestamp() >= oneWeekAgo) {
+                        weeklySum += attempt.getPoints();
+                    }
+                }
+                userScore.setWeeklyPoints(weeklySum);
+
+                leaderboardRef.setValue(userScore).addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(ResultActivity.this, "Leaderboard update failed", Toast.LENGTH_SHORT).show();
+                    } else {
+                        loadAndSetRank();
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ResultActivity.this, "Leaderboard update failed", Toast.LENGTH_SHORT).show();
-            } else {
-                // leaderboard update hone ke baad rank reload karo
-                loadAndSetRank();
             }
         });
     }
@@ -172,10 +214,10 @@ public class ResultActivity extends AppCompatActivity {
                     }
                 }
 
-                // sorting logic same as RankingFragment
+                // Sort by totalPoints
                 Collections.sort(allUsers, (u1, u2) -> {
-                    if (u2.getCorrectAnswers() != u1.getCorrectAnswers()) {
-                        return u2.getCorrectAnswers() - u1.getCorrectAnswers();
+                    if (u2.getTotalPoints() != u1.getTotalPoints()) {
+                        return u2.getTotalPoints() - u1.getTotalPoints();
                     } else if (u1.getTotalTime() != u2.getTotalTime()) {
                         return Long.compare(u1.getTotalTime(), u2.getTotalTime());
                     } else {
@@ -203,22 +245,17 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void loadUserProfile() {
-        usersRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(com.google.firebase.database.DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String name = "";
                 String imageUrl = "";
-
                 if (snapshot.exists()) {
                     name = snapshot.child("name").getValue(String.class);
                     imageUrl = snapshot.child("profileImage").getValue(String.class);
                 }
 
-                if (name != null && !name.isEmpty()) {
-                    tvName.setText(name);
-                } else {
-                    tvName.setText("User");
-                }
+                tvName.setText((name != null && !name.isEmpty()) ? name : "User");
 
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     Glide.with(ResultActivity.this)
@@ -231,7 +268,7 @@ public class ResultActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 tvName.setText("User");
                 setDefaultProfileImage("U");
             }
@@ -240,7 +277,6 @@ public class ResultActivity extends AppCompatActivity {
 
     private void setDefaultProfileImage(String fullName) {
         if (fullName == null || fullName.isEmpty()) fullName = "U";
-
         String[] words = fullName.trim().split(" ");
         String initials = "";
         for (String w : words) {
@@ -260,7 +296,6 @@ public class ResultActivity extends AppCompatActivity {
         paint.setColor(Color.WHITE);
         paint.setTextSize(48f);
         paint.setTextAlign(Paint.Align.CENTER);
-
         Rect bounds = new Rect();
         paint.getTextBounds(initials, 0, initials.length(), bounds);
         float x = size / 2f;
@@ -271,9 +306,7 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private boolean isDarkModeOn() {
-        int nightModeFlags =
-                getResources().getConfiguration().uiMode &
-                        Configuration.UI_MODE_NIGHT_MASK;
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
     }
 }

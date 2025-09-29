@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
@@ -31,12 +33,13 @@ import com.google.firebase.database.*;
 public class SettingFragment extends Fragment {
 
     private ShapeableImageView settingImage;
-    private TextView settingName, settingAbout, backSetting, reportText;
+    private TextView settingName, settingAbout, reportText;
     private Switch reportSwitch;
     private SharedPreferences sharedPreferences;
     LinearLayout privacyApp, aboutApp, shareApp, feedbackApp;
 
     private BroadcastReceiver profileUpdateReceiver;
+    private boolean isDataLoaded = false; // load once from cache
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,11 +47,10 @@ public class SettingFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
-        // Initialize views
+        // Init views
         settingImage = view.findViewById(R.id.settingImage);
         settingName = view.findViewById(R.id.settingName);
         settingAbout = view.findViewById(R.id.settingAbout);
-        backSetting = view.findViewById(R.id.backSetting);
         reportSwitch = view.findViewById(R.id.reportSwitch);
         reportText = view.findViewById(R.id.reportText);
         aboutApp = view.findViewById(R.id.aboutApp);
@@ -57,23 +59,28 @@ public class SettingFragment extends Fragment {
         feedbackApp = view.findViewById(R.id.feedbackApp);
 
         sharedPreferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
 
-        // Load data initially
-        if (isGuest) {
-            loadFromPrefs();
-        } else {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user != null) {
-                if (isNetworkAvailable()) {
-                    loadFromFirebase(user.getUid());
-                } else {
-                    loadFromPrefs();
-                }
-            }
+        setupThemeSwitch();
+        setupClickListeners();
+
+        // Load cached profile first (no flicker)
+        if (!isDataLoaded) {
+            loadProfileFromCache();
+            isDataLoaded = true;
         }
 
-        // Theme switch setup
+        // BroadcastReceiver to reload only on actual profile changes
+        profileUpdateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                loadProfileFromFirebase();
+            }
+        };
+
+        return view;
+    }
+
+    private void setupThemeSwitch() {
         int currentNightMode = getResources().getConfiguration().uiMode
                 & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
 
@@ -85,142 +92,108 @@ public class SettingFragment extends Fragment {
             reportText.setText("Light Mode");
         }
 
-        reportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    reportText.setText("Dark Mode");
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    reportText.setText("Light Mode");
-                }
-
-                if(getActivity() != null){
-                    getActivity().finish();
-                    Intent intent = new Intent(getActivity(), HomeActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                }
+        reportSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                reportText.setText("Dark Mode");
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                reportText.setText("Light Mode");
             }
-        });
 
-        // Back button
-        backSetting.setOnClickListener(v -> {
-            if(getActivity() != null) {
-                Intent intent = new Intent(getActivity(), HomeActivity.class);
-                startActivity(intent);
+            if(getActivity() != null){
                 getActivity().finish();
+                startActivity(new Intent(getActivity(), HomeActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
             }
         });
+    }
 
-        // Profile open
-        settingImage.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ProfileActivity.class);
-            startActivity(intent);
-        });
+    private void setupClickListeners() {
 
-        // Privacy
-        privacyApp.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), PrivacyActivity.class);
-            startActivity(intent);
-        });
 
-        // About
-        aboutApp.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), AboutActivity.class);
-            startActivity(intent);
-        });
+        settingImage.setOnClickListener(v -> startActivity(new Intent(getActivity(), ProfileActivity.class)));
 
-        // Share
+        privacyApp.setOnClickListener(v -> startActivity(new Intent(getActivity(), PrivacyActivity.class)));
+        aboutApp.setOnClickListener(v -> startActivity(new Intent(getActivity(), AboutActivity.class)));
+
         shareApp.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            String shareMessage = "Check out this amazing Quiz App! \n\nCurrently not on Play Store. Contact me to get the APK.";
-            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this amazing Quiz App! Contact me to get the APK.");
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         });
 
-        // Feedback
         feedbackApp.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(android.net.Uri.parse("mailto:"));
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"deepak0797dk@gmail.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"globalxwar0@gmail.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Quiz App");
             intent.putExtra(Intent.EXTRA_TEXT, "Hello, I want to give feedback...");
-
             try {
                 startActivity(Intent.createChooser(intent, "Send Feedback"));
             } catch (android.content.ActivityNotFoundException ex) {
                 Toast.makeText(getActivity(), "No email app found", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // ✅ BroadcastReceiver to refresh UI when profile updates
-        profileUpdateReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                loadFromPrefs(); // reload data from SharedPreferences
-            }
-        };
-
-        return view;
     }
 
-    private void loadFromFirebase(String uid) {
-        DatabaseReference usersRef = FirebaseDatabase.getInstance()
-                .getReference("users")
-                .child(uid);
+    private void loadProfileFromCache() {
+        String name = sharedPreferences.getString("name", "User");
+        String about = sharedPreferences.getString("about", "Welcome Back");
+        String imageUrl = sharedPreferences.getString("profileImage", "");
 
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        settingName.setText(name);
+        settingAbout.setText(about);
+
+        if (!imageUrl.isEmpty()) {
+            Glide.with(getActivity())
+                    .load(imageUrl)
+                    .circleCrop()
+                    .into(settingImage);
+        } else {
+            setDefaultProfileImage(name);
+        }
+    }
+
+    private void loadProfileFromFirebase() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null || !isNetworkAvailable()) return;
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                if (!isAdded()) return;
+                if (!snapshot.exists()) return;
+
                 String name = snapshot.child("name").getValue(String.class);
                 String about = snapshot.child("about").getValue(String.class);
                 String imageUrl = snapshot.child("profileImage").getValue(String.class);
 
-                settingName.setText(name != null ? name : "User");
-                settingAbout.setText(about != null ? about : "Welcome Back");
+                if (name != null) settingName.setText(name);
+                if (about != null) settingAbout.setText(about);
 
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     Glide.with(getActivity())
                             .load(imageUrl)
                             .circleCrop()
                             .into(settingImage);
-                } else {
+                } else if (name != null) {
                     setDefaultProfileImage(name);
                 }
 
-                // cache
-                sharedPreferences.edit()
-                        .putString("name", name)
-                        .putString("about", about)
-                        .putString("profileImage", imageUrl)
-                        .apply();
+                // Update cache
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (name != null) editor.putString("name", name);
+                if (about != null) editor.putString("about", about);
+                if (imageUrl != null) editor.putString("profileImage", imageUrl);
+                editor.apply();
             }
 
             @Override
-            public void onCancelled(DatabaseError error) { }
+            public void onCancelled(DatabaseError error) {}
         });
-    }
-
-    private void loadFromPrefs() {
-        String name = sharedPreferences.getString("name", "User");
-        String about = sharedPreferences.getString("about", "Welcome Back");
-        String imageUri = sharedPreferences.getString("profileImage", null);
-
-        settingName.setText(name);
-        settingAbout.setText(about);
-
-        if (imageUri != null && !imageUri.isEmpty()) {
-            Glide.with(getActivity())
-                    .load(imageUri)
-                    .circleCrop()
-                    .into(settingImage);
-        } else {
-            setDefaultProfileImage(name);
-        }
     }
 
     private void setDefaultProfileImage(String fullName) {
@@ -239,6 +212,7 @@ public class SettingFragment extends Fragment {
         paint.setAntiAlias(true);
         paint.setColor(0xFF6200EE);
         canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint);
+
         paint.setColor(0xFFFFFFFF);
         paint.setTextSize(48f);
         paint.setTextAlign(Paint.Align.CENTER);
@@ -247,14 +221,14 @@ public class SettingFragment extends Fragment {
         float x = size / 2f;
         float y = size / 2f - (bounds.top + bounds.bottom) / 2f;
         canvas.drawText(initials, x, y, paint);
+
         settingImage.setImageBitmap(bitmap);
     }
 
     private boolean isNetworkAvailable() {
-        android.net.ConnectivityManager cm =
-                (android.net.ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        android.net.NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnected();
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = cm.getActiveNetworkInfo();
+        return network != null && network.isConnected();
     }
 
     @Override

@@ -17,10 +17,29 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     private Context context;
     private List<UserScore> userList;
+    private OnItemClickListener listener;
+    private boolean showWeekly; // true = weekly, false = all-time
 
+    // Interface for item click
+    public interface OnItemClickListener {
+        void onItemClick(UserScore user);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    // Constructor
     public LeaderboardAdapter(Context context, List<UserScore> userList) {
         this.context = context;
         this.userList = userList;
+        this.showWeekly = showWeekly;
+    }
+
+    // Update weekly/all-time mode
+    public void setShowWeekly(boolean showWeekly) {
+        this.showWeekly = showWeekly;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -33,15 +52,27 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserScore user = userList.get(position);
-        holder.tvRank.setText(String.valueOf(position + 4)); // podium में 1-3 गए, यहाँ से 4th से शुरू
-        holder.tvName.setText(user.getName());
-        holder.tvPoints.setText(user.getCorrectAnswers() + " pts");
+
+        // Rank starts from 4 (podium 1-3 are separate)
+        holder.tvRank.setText(String.valueOf(position + 4));
+        holder.tvName.setText(user.getName() != null ? user.getName() : "User");
+
+        // ✅ Show correct points (weekly or all-time)
+        int points = showWeekly ? user.getWeeklyPoints() : user.getTotalPoints();
+        holder.tvPoints.setText(points + " pts");
 
         if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
             Glide.with(context).load(user.getProfileImage()).circleCrop().into(holder.imgProfile);
         } else {
             holder.imgProfile.setImageResource(R.drawable.ic_person); // default image
         }
+
+        // Item click listener
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(user);
+            }
+        });
     }
 
     @Override
@@ -61,11 +92,11 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             imgProfile = itemView.findViewById(R.id.imgProfile);
         }
     }
+
+    // Update list
     public void updateList(List<UserScore> newList) {
         this.userList.clear();
         this.userList.addAll(newList);
         notifyDataSetChanged();
     }
-
 }
-

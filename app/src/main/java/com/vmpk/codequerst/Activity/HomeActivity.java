@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.vmpk.codequerst.Fragment.LevelFragment;
 import com.vmpk.codequerst.Fragment.RankingFragment;
 import com.vmpk.codequerst.Fragment.SettingFragment;
 import com.vmpk.codequerst.R;
@@ -153,7 +154,8 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     if (snapshot.exists()) {
-                        Integer correctAnswers = snapshot.child("correctAnswers").getValue(Integer.class);
+                        if (isFinishing() || isDestroyed()) return;         ///       this line was very helpful for app crash
+                        Integer correctAnswers = snapshot.child("totalPoints").getValue(Integer.class);
                         if (correctAnswers != null) {
                             tvPoints.setText(correctAnswers + " pts");
                             tvPoints.setVisibility(View.VISIBLE);
@@ -368,7 +370,12 @@ public class HomeActivity extends AppCompatActivity {
                 homeScrollView.setVisibility(View.GONE);
                 findViewById(R.id.profileLayout).setVisibility(View.GONE);
                 findViewById(R.id.fragmentContainer).setVisibility(View.VISIBLE);
-            } else if (id == R.id.home) {
+            } else if (id == R.id.level) {
+                selectedFragment = new LevelFragment();
+                homeScrollView.setVisibility(View.GONE);
+                findViewById(R.id.profileLayout).setVisibility(View.GONE);
+                findViewById(R.id.fragmentContainer).setVisibility(View.VISIBLE);
+            }else if (id == R.id.home) {
                 homeScrollView.setVisibility(View.VISIBLE);
                 findViewById(R.id.profileLayout).setVisibility(View.VISIBLE);
                 findViewById(R.id.fragmentContainer).setVisibility(View.GONE);

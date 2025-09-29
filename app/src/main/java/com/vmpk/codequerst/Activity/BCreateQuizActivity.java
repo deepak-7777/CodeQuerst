@@ -68,6 +68,16 @@ public class BCreateQuizActivity extends AppCompatActivity {
     }
 
     private void addQuestion() {
+        //  Check if question limit reached
+        if (questionList.size() >= 10) {
+            new android.app.AlertDialog.Builder(this)
+                    .setTitle("Limit Reached")
+                    .setMessage("You can only create up to 10 questions per quiz.")
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
+            return;
+        }
+
         String qText = etQuestion.getText().toString().trim();
         String op1 = etOption1.getText().toString().trim();
         String op2 = etOption2.getText().toString().trim();
@@ -104,6 +114,7 @@ public class BCreateQuizActivity extends AppCompatActivity {
         etOption4.setText("");
         rgCorrectAnswer.clearCheck();
     }
+
 
     private void submitQuiz() {
         if (questionList.isEmpty()) {

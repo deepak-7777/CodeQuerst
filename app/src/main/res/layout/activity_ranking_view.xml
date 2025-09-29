@@ -1,0 +1,195 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Loading Layout -->
+    <LinearLayout
+        android:id="@+id/loadingProfile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/iconColor" />
+
+    </LinearLayout>
+
+    <!-- Main Content -->
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Toolbar -->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/RankToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:paddingTop="38dp"
+                app:titleTextAppearance="@style/ToolbarTitleBold">
+
+                <TextView
+                    android:id="@+id/backRank"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5sp"
+                    android:background="@drawable/back" />
+
+            </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_horizontal">
+
+            <!-- Profile Image -->
+            <FrameLayout
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/rankImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+            </FrameLayout>
+
+            <!-- Name Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="24dp"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/tvFirstNameRank"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textColor="@color/TextColor"
+                    android:layout_marginStart="5dp"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/rankFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/createquiz_bg"
+                    android:padding="12dp"
+                    android:textColor="@color/profileColor"
+                    android:textSize="14sp"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+            <!-- Email Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/rankPointLevel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Points"
+                    android:textColor="@color/TextColor"
+                    android:layout_marginStart="5dp"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/rankPoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/createquiz_bg"
+                    android:padding="12dp"
+                    android:textColor="@color/profileColor"
+                    android:textSize="14sp"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+            <!-- Phone Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/rankLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rank"
+                    android:textColor="@color/TextColor"
+                    android:layout_marginStart="5dp"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/rank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/createquiz_bg"
+                    android:padding="12dp"
+                    android:textColor="@color/profileColor"
+                    android:inputType="phone"
+                    android:textSize="14sp"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+            <!-- About Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/rankAboutLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="About"
+                    android:textColor="@color/TextColor"
+                    android:layout_marginStart="5dp"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/rankAbout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/createquiz_bg"
+                    android:padding="12dp"
+                    android:textColor="@color/profileColor"
+                    android:textSize="14sp"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

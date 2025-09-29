@@ -110,12 +110,25 @@ public class CreateQuizActivity extends AppCompatActivity {
                         joinProgressBar.setVisibility(View.GONE);
 
                         if (doc.exists()) {
-                            // Quiz exists → start AJoinQuizActivity
-                            Intent intent = new Intent(CreateQuizActivity.this, AJoinQuizActivity.class);
-                            intent.putExtra("quizId", doc.getId());
-                            intent.putExtra("quizTitle", doc.getString("title"));
-                            startActivity(intent);
-                            dialog.dismiss();
+                            String creatorEmail = doc.getString("creatorEmail");
+                            String currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+                            // ✅ Yahan check karenge
+                            if (creatorEmail != null && creatorEmail.equals(currentUserEmail)) {
+                                // Agar user apna hi quiz join kar raha hai
+                                new android.app.AlertDialog.Builder(this)
+                                        .setTitle("Alert")
+                                        .setMessage("This quiz was created by you. Instead of joining, share the quiz code with your friends so they can join!")
+                                        .setPositiveButton("OK", (d, which) -> d.dismiss())
+                                        .show();
+                            } else {
+                                // Quiz exists → start AJoinQuizActivity
+                                Intent intent = new Intent(CreateQuizActivity.this, AJoinQuizActivity.class);
+                                intent.putExtra("quizId", doc.getId());
+                                intent.putExtra("quizTitle", doc.getString("title"));
+                                startActivity(intent);
+                                dialog.dismiss();
+                            }
                         } else {
                             Toast.makeText(this, "Invalid quiz code! Please try again.", Toast.LENGTH_SHORT).show();
                         }
@@ -128,6 +141,7 @@ public class CreateQuizActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
 
 
     private void loadQuizzes() {

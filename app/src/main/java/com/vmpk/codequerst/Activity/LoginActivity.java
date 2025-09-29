@@ -194,30 +194,21 @@ private void saveUserToRealtimeDatabase(FirebaseUser user) {
     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
 
     usersRef.get().addOnSuccessListener(snapshot -> {
-        Map<String, Object> userData = new HashMap<>();
-
-        // Sirf agar name nahi hai tab update karo
-        if (!snapshot.hasChild("name") || snapshot.child("name").getValue(String.class).isEmpty()) {
+        if (!snapshot.exists()) {
+            // Pehli baar user UID ke saath create karo
+            Map<String, Object> userData = new HashMap<>();
             userData.put("name", user.getDisplayName() != null ? user.getDisplayName() : "User");
-        }
-
-        // Email sirf new user ke liye
-        if (!snapshot.hasChild("email") || snapshot.child("email").getValue(String.class).isEmpty()) {
             userData.put("email", user.getEmail());
-        }
+            userData.put("phone", "");
+            userData.put("about", "");
+            userData.put("profileImage", user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "");
 
-        // Phone, about, profileImage preserve karo agar already exist karta hai
-        if (!snapshot.hasChild("phone")) userData.put("phone", "");
-        if (!snapshot.hasChild("about")) userData.put("about", "");
-        if (!snapshot.hasChild("profileImage") && user.getPhotoUrl() != null) {
-            userData.put("profileImage", user.getPhotoUrl().toString());
+            usersRef.setValue(userData);
         }
-
-        // Sirf agar userData me kuch ho tab hi update
-        if (!userData.isEmpty()) {
-            usersRef.updateChildren(userData);
-        }
+        // Agar user already exists, kuch bhi update mat karo
+        // Isse leaderboard ka data preserve rahega
     });
 }
+
 
 }

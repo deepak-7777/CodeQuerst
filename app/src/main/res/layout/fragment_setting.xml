@@ -13,12 +13,6 @@
         android:paddingTop="38dp"
         app:titleTextAppearance="@style/ToolbarTitleBold">
 
-        <TextView
-            android:id="@+id/backSetting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5sp"
-            android:background="@drawable/back"/>
 
         <TextView
             android:layout_width="match_parent"
