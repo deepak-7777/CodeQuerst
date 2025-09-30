@@ -32,10 +32,11 @@
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/cToolbar"
+        android:id="@+id/quizToolbar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:paddingTop="38dp"
+        android:background="@color/colorControlNormal"
         app:titleTextAppearance="@style/ToolbarTitleBold">
 
         <TextView
@@ -58,6 +59,11 @@
             android:textSize="22sp"
             android:paddingStart="12sp" />
     </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <!-- Timer Layout Below Toolbar -->
     <FrameLayout
@@ -126,17 +132,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                android:background="@drawable/rounded_option_bg"
                 android:text="Option 1"
                 android:layout_marginBottom="5dp"
-                android:textColor="#282727" />
+                android:textColor="@color/TextColor" />
 
             <RadioButton
                 android:id="@+id/option2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_option_bg"
-                android:textColor="#282727"
+                android:textColor="@color/TextColor"
                 android:layout_marginBottom="5dp"
                 android:text="Option 2"
                 android:padding="12dp" />
@@ -145,8 +149,7 @@
                 android:id="@+id/option3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_option_bg"
-                android:textColor="#282727"
+                android:textColor="@color/TextColor"
                 android:layout_marginBottom="5dp"
                 android:text="Option 3"
                 android:padding="12dp" />
@@ -155,8 +158,7 @@
                 android:id="@+id/option4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_option_bg"
-                android:textColor="#282727"
+                android:textColor="@color/TextColor"
                 android:layout_marginBottom="5dp"
                 android:text="Option 4"
                 android:padding="12dp" />
@@ -185,6 +187,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:textSize="16sp" />
+
+    </LinearLayout>
 
     </LinearLayout>
 

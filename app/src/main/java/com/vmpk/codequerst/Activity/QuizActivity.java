@@ -16,6 +16,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class QuizActivity extends AppCompatActivity {
-
+    androidx.appcompat.widget.Toolbar quizToolbar;
     private TextView tvQuestion, tvCounter, tvCTitle, tvTimer, cMessage;
     private RadioGroup radioGroup;
     private RadioButton option1, option2, option3, option4;
@@ -65,7 +66,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        // 1️ Initialize views
+        quizToolbar = findViewById(R.id.quizToolbar);
         cMessage = findViewById(R.id.CMessage);
         tvQuestion = findViewById(R.id.tvQuestion);
         tvCounter = findViewById(R.id.tvCounter);
@@ -112,6 +113,7 @@ public class QuizActivity extends AppCompatActivity {
         circularProgressIndicator.setVisibility(View.GONE);
         tvTimer.setVisibility(View.GONE);
         cMessage.setVisibility(View.GONE);
+        quizToolbar.setVisibility(View.GONE);
 
         // 5️ Load topic title and questions
         loadTopicTitle();
@@ -189,6 +191,7 @@ public class QuizActivity extends AppCompatActivity {
                     circularProgressIndicator.setVisibility(View.VISIBLE);
                     tvTimer.setVisibility(View.VISIBLE);
                     cMessage.setVisibility(View.VISIBLE);
+                    quizToolbar.setVisibility(View.VISIBLE);
 
                     startTimer();
                 } else {
@@ -274,26 +277,29 @@ public class QuizActivity extends AppCompatActivity {
 
         saveAnswer(selectedOption);
 
+
         if (selectedOption == correctAnswer) {
-            selectedButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+            selectedButton.setBackgroundResource(R.drawable.option_correct_bg);
         } else {
-            selectedButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F44336")));
+            selectedButton.setBackgroundResource(R.drawable.option_wrong_bg);
             highlightCorrectAnswer(correctAnswer);
         }
+
 
         selectedButton.postDelayed(this::nextQuestion, 1000);
     }
 
     private void highlightCorrectAnswer(int correctAnswer) {
         if (correctAnswer == 1)
-            option1.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+            option1.setBackgroundResource(R.drawable.option_correct_bg);
         else if (correctAnswer == 2)
-            option2.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+            option2.setBackgroundResource(R.drawable.option_correct_bg);
         else if (correctAnswer == 3)
-            option3.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+            option3.setBackgroundResource(R.drawable.option_correct_bg);
         else if (correctAnswer == 4)
-            option4.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+            option4.setBackgroundResource(R.drawable.option_correct_bg);
     }
+
 
     private void saveAnswer(int selectedOption) {
         userAnswers.put(currentIndex, selectedOption);
@@ -318,11 +324,12 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void resetOptionColors() {
-        option1.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-        option2.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-        option3.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-        option4.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
+        option1.setBackgroundResource(R.drawable.createquiz_bg);
+        option2.setBackgroundResource(R.drawable.createquiz_bg);
+        option3.setBackgroundResource(R.drawable.createquiz_bg);
+        option4.setBackgroundResource(R.drawable.createquiz_bg);
     }
+
 
     private void nextQuestion() {
         if (currentIndex < questionList.size() - 1) {

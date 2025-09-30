@@ -5,6 +5,12 @@
         <item name="android:statusBarColor">@color/black</item>
         <!-- Status bar icons white (light) -->
         <item name="android:windowLightStatusBar">false</item>
+
+    </style>
+
+
+    <style name="AppBackground" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/black</item>
     </style>
 
     <color name="profileColor">#BDBABA</color>

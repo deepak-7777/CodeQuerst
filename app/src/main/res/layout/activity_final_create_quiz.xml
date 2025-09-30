@@ -16,17 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="45dp"
-            android:background="@color/home_bg"
+            android:background="@color/colorControlNormal"
             android:paddingBottom="7dp"
             app:titleTextAppearance="@style/ToolbarTitleBold">
-
-<!--            <TextView-->
-<!--                android:id="@+id/finalBackCreateQuiz"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:padding="5dp"-->
-<!--                android:background="@drawable/back"-->
-<!--                android:contentDescription="Back Button"/>-->
 
             <TextView
                 android:layout_width="match_parent"

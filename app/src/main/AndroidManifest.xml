@@ -13,21 +13,27 @@
         android:theme="@style/Theme.CodeQuerst">
         <activity
             android:name=".Activity.ChooseKotlinActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.ChooseJavaScriptActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.ChooseJavaActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.ChoosePythonActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.ChooseCppActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.ChooseActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.RankingViewActivity"
@@ -37,6 +43,7 @@
             android:exported="false" />
         <activity
             android:name=".Activity.AJoinQuizActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.JoinQuizActivity"
@@ -49,9 +56,11 @@
             android:exported="false" />
         <activity
             android:name=".Activity.BCreateQuizActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.ACreateQuizActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.CreateQuizActivity"
@@ -79,27 +88,34 @@
             android:exported="false" />
         <activity
             android:name=".Activity.QuizActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.ResultActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.JavaScriptActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.JavaActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.KotlinActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.PythonActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.CppActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.CActivity"
+            android:theme="@style/AppBackground"
             android:exported="false" />
         <activity
             android:name=".Activity.PrivacyActivity"

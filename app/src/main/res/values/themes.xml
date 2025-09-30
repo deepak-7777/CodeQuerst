@@ -26,12 +26,18 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
+
+    </style>
+
+    <style name="AppBackground" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/whitequiz</item>
     </style>
 
     <!-- Splash Theme for system default splash -->
     <style name="Theme.CodeQuest.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
     </style>
+
 
 
     <!-- Colors -->

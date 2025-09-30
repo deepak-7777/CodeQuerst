@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="45dp"
+        android:background="@color/colorControlNormal"
         app:titleTextAppearance="@style/ToolbarTitleBold">
 
         <TextView
@@ -31,6 +32,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="3dp"
             android:orientation="vertical">
 
         <!-- Row 1 -->

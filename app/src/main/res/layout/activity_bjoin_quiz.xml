@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="35dp"
         android:paddingEnd="16dp"
+        android:background="@color/colorControlNormal"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -77,14 +78,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="15dp">
 
             <TextView
                 android:id="@+id/tvResultHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="RESULT CARD"
+                android:text="CREATOR DETAILS &amp; RESULT"
                 android:textColor="@color/iconColor"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -99,6 +100,31 @@
                 android:divider="?android:attr/dividerHorizontal"
                 android:orientation="vertical"
                 android:showDividers="middle">
+
+                <TextView
+                    android:id="@+id/creatorName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="6dp"
+                    android:text="Name : "
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/creatorRank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="6dp"
+                    android:text="Rank : "
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/creatorPoints"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="6dp"
+                    android:text="Points : "
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvQuestionsAsked"
@@ -128,7 +154,7 @@
         style="@android:style/Widget.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/fsub_bg"
         android:padding="12dp"
         android:textColor="@color/white"

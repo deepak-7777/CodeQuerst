@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="45dp"
-        android:background="@color/home_bg"
+        android:background="@color/colorControlNormal"
         android:paddingBottom="7dp"
         app:titleTextAppearance="@style/ToolbarTitleBold">
 

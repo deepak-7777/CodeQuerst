@@ -231,13 +231,27 @@ public class SettingFragment extends Fragment {
         return network != null && network.isConnected();
     }
 
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (getActivity() != null) {
+//            getActivity().registerReceiver(profileUpdateReceiver, new IntentFilter("PROFILE_UPDATED"));
+//        }
+//    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (getActivity() != null) {
-            getActivity().registerReceiver(profileUpdateReceiver, new IntentFilter("PROFILE_UPDATED"));
+            IntentFilter filter = new IntentFilter("PROFILE_UPDATED");
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                getActivity().registerReceiver(profileUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                getActivity().registerReceiver(profileUpdateReceiver, filter);
+            }
         }
     }
+
 
     @Override
     public void onPause() {
