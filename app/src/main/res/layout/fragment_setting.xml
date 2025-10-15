@@ -3,26 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/home_bg">
 
     <!-- Toolbar -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/cToolbar"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:paddingTop="38dp"
-        app:titleTextAppearance="@style/ToolbarTitleBold">
+        android:layout_height="wrap_content">
 
-
-        <TextView
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/cToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Setting"
-            android:textColor="@color/TextColor"
-            android:textStyle="bold"
-            android:textSize="21dp"
-            android:paddingStart="12sp" />
-    </androidx.appcompat.widget.Toolbar>
+            android:layout_height="80dp"
+            android:background="@color/colorControlNormal"
+            android:paddingTop="38dp"
+            app:titleTextAppearance="@style/ToolbarTitleBold">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Setting"
+                android:textColor="@color/TextColor"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:textSize="21dp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </androidx.cardview.widget.CardView>
 
     <!-- ScrollView for settings content -->
     <ScrollView
@@ -222,6 +230,65 @@
                     android:src="@drawable/ic_arrow_right" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/rateApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_star" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="16dp"
+                    android:text="Rate App"
+                    android:textColor="@color/TextColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/logoutApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_logout" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="16dp"
+                    android:text="Logout"
+                    android:textColor="@color/TextColor"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

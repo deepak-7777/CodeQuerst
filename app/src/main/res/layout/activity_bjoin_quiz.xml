@@ -7,6 +7,11 @@
     android:layout_height="match_parent">
 
     <!-- Left title and Right Home container -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLayout"
         android:layout_width="0dp"
@@ -62,6 +67,8 @@
                 android:textSize="14sp" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardResult"

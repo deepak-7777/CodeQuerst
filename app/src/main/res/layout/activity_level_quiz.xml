@@ -1,73 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    tools:context=".Activity.LevelQuizActivity">
 
-    <!-- Loading Layout -->
+    <!-- 🔹 Fullscreen Loading Overlay -->
     <LinearLayout
-        android:id="@+id/loadingJoinQuiz"
+        android:id="@+id/levelLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:elevation="10dp"
         android:visibility="gone">
 
         <ProgressBar
-            android:id="@+id/progressbarJoinQuiz"
+            android:id="@+id/progressbar"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:indeterminate="true" />
-
     </LinearLayout>
 
-    <!-- Main Quiz Content -->
+    <!-- 🔹 Main content (Toolbar + Questions) -->
     <LinearLayout
-        android:id="@+id/contentJoinQuiz"
+        android:id="@+id/levelAll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
         <!-- Toolbar -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarJoinQuiz"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:paddingTop="38dp"
-            android:background="@color/colorControlNormal"
-            app:titleTextAppearance="@style/ToolbarTitleBold">
-
-            <TextView
-                android:id="@+id/backJoinQuizActivity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/back"
-                android:contentDescription="Back Button"/>
-
-            <TextView
-                android:id="@+id/titleJoinQuiz"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/quizToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="C Language"
-                android:textColor="@color/TextColor"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="22sp" />
-        </androidx.appcompat.widget.Toolbar>
+                android:layout_height="80dp"
+                android:paddingTop="38dp"
+                android:background="@color/colorControlNormal"
+                app:titleTextAppearance="@style/ToolbarTitleBold">
 
+                <TextView
+                    android:id="@+id/level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Level 1"
+                    android:textColor="@color/TextColor"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:textSize="22sp"
+                    android:paddingStart="12sp" />
+            </androidx.appcompat.widget.Toolbar>
         </androidx.cardview.widget.CardView>
 
         <!-- Timer Layout -->
         <FrameLayout
-            android:id="@+id/timerJoinQuiz"
+            android:id="@+id/timerLevel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -75,7 +67,7 @@
             android:gravity="center">
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/circularProgressJoinQuiz"
+                android:id="@+id/circularProgressLevel"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 app:indicatorSize="120dp"
@@ -84,10 +76,10 @@
                 app:trackColor="#D057C3"
                 android:indeterminate="false"
                 android:max="60"
-                android:progress="25"/>
+                android:progress="25" />
 
             <TextView
-                android:id="@+id/tvTimerJoinQuiz"
+                android:id="@+id/tvTimerLevel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="25"
@@ -98,7 +90,7 @@
                 android:layout_gravity="center" />
         </FrameLayout>
 
-        <!-- Main Content -->
+        <!-- Question + Options -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,9 +98,8 @@
             android:layout_marginTop="16dp"
             android:padding="16dp">
 
-            <!-- Question Text -->
             <TextView
-                android:id="@+id/tvQuestionJoinQuiz"
+                android:id="@+id/tvQuestionLevel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Question will appear here"
@@ -119,57 +110,51 @@
                 android:background="@drawable/bg_question"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Options -->
             <RadioGroup
-                android:id="@+id/radioGroupJoinQuiz"
+                android:id="@+id/radioGroupLevel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <RadioButton
-                    android:id="@+id/option1JoinQuiz"
+                    android:id="@+id/option1Level"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
-                    android:background="@drawable/rounded_option_bg"
                     android:text="Option 1"
                     android:layout_marginBottom="5dp"
-                    android:textColor="@color/iconColor" />
+                    android:textColor="@color/TextColor" />
 
                 <RadioButton
-                    android:id="@+id/option2JoinQuiz"
+                    android:id="@+id/option2Level"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_option_bg"
-                    android:textColor="@color/iconColor"
+                    android:textColor="@color/TextColor"
                     android:layout_marginBottom="5dp"
                     android:text="Option 2"
                     android:padding="12dp" />
 
                 <RadioButton
-                    android:id="@+id/option3JoinQuiz"
+                    android:id="@+id/option3Level"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_option_bg"
-                    android:textColor="@color/iconColor"
+                    android:textColor="@color/TextColor"
                     android:layout_marginBottom="5dp"
                     android:text="Option 3"
                     android:padding="12dp" />
 
                 <RadioButton
-                    android:id="@+id/option4JoinQuiz"
+                    android:id="@+id/option4Level"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_option_bg"
-                    android:textColor="@color/iconColor"
+                    android:textColor="@color/TextColor"
                     android:layout_marginBottom="5dp"
                     android:text="Option 4"
                     android:padding="12dp" />
             </RadioGroup>
 
-            <!-- Question Counter -->
             <TextView
-                android:id="@+id/tvCounterJoinQuiz"
+                android:id="@+id/tvCounterLevel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1 / 10"
@@ -180,7 +165,11 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="12dp"
                 android:textSize="16sp" />
-
         </LinearLayout>
+
+
     </LinearLayout>
-</LinearLayout>
+
+
+
+</FrameLayout>

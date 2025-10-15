@@ -25,8 +25,7 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingHorizontal="16dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/container"
@@ -36,11 +35,16 @@
             android:gravity="center_horizontal">
 
             <!-- Toolbar -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/ProfileToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:paddingTop="38dp"
+                android:background="@color/colorControlNormal"
                 app:titleTextAppearance="@style/ToolbarTitleBold">
 
                 <TextView
@@ -59,6 +63,8 @@
                     android:textSize="21sp"
                     android:paddingStart="12sp" />
             </androidx.appcompat.widget.Toolbar>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- Profile Image -->
             <FrameLayout
@@ -86,6 +92,11 @@
                     android:focusable="true"/>
             </FrameLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp">
             <!-- Name Field -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -216,6 +227,8 @@
                 android:text="Log Out"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
+        </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

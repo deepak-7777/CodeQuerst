@@ -1,14 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/levelRoot"
     tools:context=".Fragment.LevelFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/RankingToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:paddingTop="38dp"
+        android:background="@color/colorControlNormal"
+        app:titleTextAppearance="@style/ToolbarTitleBold">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Levels"
+            android:textColor="@color/TextColor"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:textSize="21dp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    </androidx.cardview.widget.CardView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- SwipeRefresh + Content -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRanking"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="NotSibling">
+
+            <ScrollView
+                android:id="@+id/scrollViewLevels"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="12dp">
+
+                <LinearLayout
+                    android:id="@+id/questionLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    tools:ignore="MissingClass">
+
+                    <!-- Custom Zigzag View -->
+                    <com.vmpk.codequerst.Custom.ZigZagView
+                        android:id="@+id/zigzagView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+
+                </LinearLayout>
+            </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Centered ProgressBar overlay -->
+        <ProgressBar
+            android:id="@+id/progressRanking"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/iconColor"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

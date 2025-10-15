@@ -6,10 +6,15 @@
     android:orientation="vertical">
 
     <!-- Toolbar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/privacyToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorControlNormal"
         android:paddingTop="45dp"
         app:titleTextAppearance="@style/ToolbarTitleBold">
 
@@ -30,7 +35,7 @@
             android:paddingStart="12sp" />
     </androidx.appcompat.widget.Toolbar>
 
-
+    </androidx.cardview.widget.CardView>
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"

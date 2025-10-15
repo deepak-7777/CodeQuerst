@@ -1,11 +1,17 @@
 package com.vmpk.codequerst.Adapter;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +27,6 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
     private List<BCreateQuiz> quizList;
     private List<String> quizIds; // Firestore document IDs
 
-    // ✅ Constructor with both lists
     public QuizAdapter(List<BCreateQuiz> quizList, List<String> quizIds) {
         this.quizList = quizList;
         this.quizIds = quizIds;
@@ -40,15 +45,15 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
         BCreateQuiz quiz = quizList.get(position);
         holder.tvQuizItem.setText("Quiz " + (position + 1) + ": " + quiz.getTitle());
 
-        // 🔹 Short click → Open details
+        // Open Quiz Details on click
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), QuizDetailActivity.class);
             intent.putExtra("quizData", quiz);
-            intent.putExtra("quizId", quizIds.get(position)); // Firestore doc ID
+            intent.putExtra("quizId", quizIds.get(position));
             v.getContext().startActivity(intent);
         });
 
-        // 🔹 Long click → Delete
+        // Delete quiz on long click
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(v.getContext())
                     .setTitle("Delete Quiz")
@@ -56,7 +61,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
                     .setPositiveButton("Delete", (dialog, which) -> {
                         FirebaseFirestore.getInstance()
                                 .collection("quizzes")
-                                .document(quizIds.get(position)) // Correct Firestore ID
+                                .document(quizIds.get(position))
                                 .delete()
                                 .addOnSuccessListener(aVoid -> {
                                     quizList.remove(position);
@@ -66,7 +71,27 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
-            return true; // consume long press
+            return true;
+        });
+
+        // Show quiz code dialog on eye button click
+        holder.btnViewCode.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle("Quiz Code");
+
+            String code = quizIds.get(position); // The quiz code (Firestore doc ID)
+            builder.setMessage("Your Quiz Code: " + code);
+
+            builder.setPositiveButton("Copy", (dialog, which) -> {
+                ClipboardManager clipboard = (ClipboardManager) v.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Quiz Code", code);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(v.getContext(), "Code copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
+
+            builder.setNegativeButton("Close", (dialog, which) -> dialog.dismiss());
+
+            builder.show();
         });
     }
 
@@ -77,10 +102,12 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
 
     static class QuizViewHolder extends RecyclerView.ViewHolder {
         TextView tvQuizItem;
+        ImageView btnViewCode;
 
         public QuizViewHolder(@NonNull View itemView) {
             super(itemView);
             tvQuizItem = itemView.findViewById(R.id.tvQuizItem);
+            btnViewCode = itemView.findViewById(R.id.btnViewCode);
         }
     }
 }

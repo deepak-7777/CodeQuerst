@@ -16,11 +16,16 @@
             android:orientation="vertical">
 
             <!-- Toolbar -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/ProfileViewToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:paddingTop="38dp"
+                android:background="@color/colorControlNormal"
                 app:titleTextAppearance="@style/ToolbarTitleBold">
 
                 <TextView
@@ -39,6 +44,8 @@
                     android:textSize="21sp"
                     android:paddingStart="12sp" />
             </androidx.appcompat.widget.Toolbar>
+
+            </androidx.cardview.widget.CardView>
 
         <LinearLayout
             android:layout_width="wrap_content"

@@ -8,6 +8,10 @@
     android:background="@color/home_bg">
 
     <!-- Toolbar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/privacyToolbar"
         android:layout_width="match_parent"
@@ -35,6 +39,7 @@
             android:paddingStart="12dp" />
     </androidx.appcompat.widget.Toolbar>
 
+    </androidx.cardview.widget.CardView>
     <!-- Search Bar -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -134,6 +139,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="8dp"/>
+
         </LinearLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

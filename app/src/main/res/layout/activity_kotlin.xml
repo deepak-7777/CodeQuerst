@@ -6,6 +6,10 @@
     android:orientation="vertical">
 
     <!-- Toolbar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/cToolbar"
         android:layout_width="match_parent"
@@ -30,6 +34,8 @@
             android:textSize="21dp"
             android:paddingStart="12sp" />
     </androidx.appcompat.widget.Toolbar>
+
+    </androidx.cardview.widget.CardView>
 
     <!-- Scrollable list -->
 

@@ -6,6 +6,10 @@
     android:orientation="vertical">
 
     <!-- Toolbar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/privacyToolbar"
         android:layout_width="match_parent"
@@ -21,9 +25,9 @@
             android:padding="5sp"
             android:background="@drawable/back"/>
 
-
     </androidx.appcompat.widget.Toolbar>
 
+    </androidx.cardview.widget.CardView>
 
     <ScrollView
         android:layout_width="match_parent"

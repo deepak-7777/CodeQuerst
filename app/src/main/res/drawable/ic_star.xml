@@ -1,0 +1,36 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48"
+    android:tint="@color/iconColor">
+
+    <!-- Star outline (bold) -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/iconColor"
+        android:strokeWidth="4"
+        android:strokeLineJoin="round"
+        android:pathData="M24,4 L29,18 L44,18 L32,28 L37,42 L24,34 L11,42 L16,28 L4,18 L19,18 Z"/>
+
+    <!-- Rays around the star -->
+    <!-- Top -->
+    <path android:strokeWidth="2" android:strokeColor="@color/iconColor" android:strokeLineCap="round"
+        android:pathData="M24,0 L24,4"/>
+    <!-- Bottom -->
+    <path android:strokeWidth="2" android:strokeColor="@color/iconColor" android:strokeLineCap="round"
+        android:pathData="M24,44 L24,48"/>
+
+    <!-- Top-left -->
+    <path android:strokeWidth="1.5" android:strokeColor="@color/iconColor" android:strokeLineCap="round"
+        android:pathData="M7,7 L11,11"/>
+    <!-- Top-right -->
+    <path android:strokeWidth="1.5" android:strokeColor="@color/iconColor" android:strokeLineCap="round"
+        android:pathData="M37,7 L33,11"/>
+    <!-- Bottom-left -->
+    <path android:strokeWidth="1.5" android:strokeColor="@color/iconColor" android:strokeLineCap="round"
+        android:pathData="M7,37 L11,33"/>
+    <!-- Bottom-right -->
+    <path android:strokeWidth="1.5" android:strokeColor="@color/iconColor" android:strokeLineCap="round"
+        android:pathData="M37,37 L33,33"/>
+</vector>

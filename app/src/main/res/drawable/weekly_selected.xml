@@ -1,0 +1,4 @@
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/your_original_shape"
+    android:insetLeft="17dp"
+    android:insetRight="20dp" />

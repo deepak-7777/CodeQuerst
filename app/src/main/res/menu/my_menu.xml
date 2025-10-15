@@ -10,14 +10,14 @@
 
     <item
         android:id="@+id/level"
-        android:title="Levels"
+        android:title="Level"
         android:icon="@drawable/level"
         app:cnb_iconColor="@color/white"
         app:cnb_backgroundColor="@color/orange"/>
 
     <item
         android:id="@+id/ranking"
-        android:title="Ranking"
+        android:title="Leaderboard"
         android:icon="@drawable/ranking"
         app:cnb_iconColor="@color/white"
         app:cnb_backgroundColor="@color/orange"/>

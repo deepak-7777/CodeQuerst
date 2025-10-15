@@ -65,4 +65,6 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     ///    Splash activity
     implementation("androidx.core:core-splashscreen:1.0.1")
+    ///   for ranking circle img
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }

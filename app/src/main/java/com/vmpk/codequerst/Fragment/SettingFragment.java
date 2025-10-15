@@ -1,5 +1,7 @@
 package com.vmpk.codequerst.Fragment;
 
+import static androidx.browser.customtabs.CustomTabsClient.getPackageName;
+
 import android.content.*;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -7,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
@@ -20,8 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.vmpk.codequerst.Activity.AboutActivity;
 import com.vmpk.codequerst.Activity.HomeActivity;
+import com.vmpk.codequerst.Activity.LoginActivity;
 import com.vmpk.codequerst.Activity.PrivacyActivity;
 import com.vmpk.codequerst.Activity.ProfileActivity;
 import com.vmpk.codequerst.R;
@@ -31,12 +37,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
 public class SettingFragment extends Fragment {
-
     private ShapeableImageView settingImage;
     private TextView settingName, settingAbout, reportText;
     private Switch reportSwitch;
+    private FirebaseAuth firebaseAuth;
+    private boolean isGuest;
+    private GoogleSignInClient gsc;
     private SharedPreferences sharedPreferences;
-    LinearLayout privacyApp, aboutApp, shareApp, feedbackApp;
+    LinearLayout privacyApp, aboutApp, shareApp, feedbackApp, rateApp, logoutApp;
 
     private BroadcastReceiver profileUpdateReceiver;
     private boolean isDataLoaded = false; // load once from cache
@@ -48,6 +56,8 @@ public class SettingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
         // Init views
+        logoutApp = view.findViewById(R.id.logoutApp);
+        rateApp = view.findViewById(R.id.rateApp);
         settingImage = view.findViewById(R.id.settingImage);
         settingName = view.findViewById(R.id.settingName);
         settingAbout = view.findViewById(R.id.settingAbout);
@@ -68,6 +78,10 @@ public class SettingFragment extends Fragment {
             loadProfileFromCache();
             isDataLoaded = true;
         }
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        isGuest = sharedPreferences.getBoolean("isGuest", false);
 
         // BroadcastReceiver to reload only on actual profile changes
         profileUpdateReceiver = new BroadcastReceiver() {
@@ -120,14 +134,68 @@ public class SettingFragment extends Fragment {
         shareApp.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this amazing Quiz App! Contact me to get the APK.");
+            String playStoreLink = "https://play.google.com/store/apps/details?id=" + v.getContext().getPackageName();
+            String shareMessage = "Check out this amazing Quiz App! 🎯 Test your knowledge and have fun!\n\nDownload now:\n" + playStoreLink;
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         });
+
+        rateApp.setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=" + v.getContext().getPackageName())));
+            } catch (android.content.ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=" + v.getContext().getPackageName())));
+            }
+        });
+
+        logoutApp.setOnClickListener(v -> {
+            if (isGuest) {
+                // Clear guest data from SharedPreferences
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("name");
+                editor.remove("email");
+                editor.remove("phone");
+                editor.remove("about");
+                editor.putBoolean("isGuest", false);
+                editor.apply();
+
+                FirebaseAuth.getInstance().signOut();
+
+                // Go to LoginActivity
+                Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                requireActivity().finish();
+            } else {
+                // Firebase + Google Sign Out
+                FirebaseAuth.getInstance().signOut();
+
+                // Initialize GoogleSignInClient if null
+                if (gsc == null) {
+                    gsc = GoogleSignIn.getClient(requireActivity(),
+                            new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(
+                                    com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestEmail()
+                                    .build());
+                }
+
+                gsc.signOut().addOnCompleteListener(task -> {
+                    Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                });
+            }
+        });
+
+
 
         feedbackApp.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(android.net.Uri.parse("mailto:"));
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"globalxwar0@gmail.com"});
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"vmpk77@gmail.com"});
             intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Quiz App");
             intent.putExtra(Intent.EXTRA_TEXT, "Hello, I want to give feedback...");
             try {
