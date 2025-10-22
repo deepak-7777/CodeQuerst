@@ -13,7 +13,6 @@
         android:padding="8dp">
 
         <!-- Podium Top 3 -->
-        <!-- Podium Top 3 -->
         <LinearLayout
             android:id="@+id/podiumLayout"
             android:layout_width="match_parent"
@@ -100,7 +99,7 @@
                     <ImageView
                         android:id="@+id/imgFirst"
                         android:layout_width="90dp"
-                        android:layout_height="97dp"
+                        android:layout_height="90dp"
                         android:layout_gravity="top|center_horizontal"
                         android:scaleType="centerCrop" />
 
@@ -112,6 +111,7 @@
                         android:background="@drawable/podium_gold"
                         android:gravity="center"
                         android:text="1"
+                        android:translationY="-9dp"
                         android:textColor="@android:color/white"
                         android:textStyle="bold"
                         android:textSize="14sp"/>
@@ -144,6 +144,14 @@
                 android:clipChildren="false"
                 android:clipToPadding="false">
 
+                <ImageView
+                    android:id="@+id/weeklyDialogBox"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_info" />
+
                 <FrameLayout
                     android:layout_width="70dp"
                     android:layout_height="90dp"
@@ -153,8 +161,8 @@
 
                     <ImageView
                         android:id="@+id/imgThird"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
                         android:scaleType="centerCrop"
                         android:layout_gravity="top|center_horizontal"/>
 
@@ -163,7 +171,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="bottom|center_horizontal"
-                        android:translationY="-8dp"
+                        android:translationY="-15dp"
                         android:background="@drawable/podium_bronze"
                         android:gravity="center"
                         android:text="3"
@@ -192,12 +200,12 @@
         </LinearLayout>
 
 
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#CCCCCC"
-            android:layout_marginVertical="8dp"/>
+<!--        &lt;!&ndash; Divider &ndash;&gt;-->
+<!--        <View-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:background="#CCCCCC"-->
+<!--            android:layout_marginVertical="8dp"/>-->
 
         <!-- RecyclerView for rest of leaderboard -->
         <androidx.recyclerview.widget.RecyclerView
@@ -217,6 +225,40 @@
             android:layout_gravity="center"
             android:indeterminateTint="@color/iconColor"
             android:visibility="gone"/>
+
+        <!-- Empty State Layout (visible only when no data) -->
+        <LinearLayout
+            android:id="@+id/emptyStateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_empty_leaderboard"
+                android:contentDescription="No Data" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No quiz data available yet!"
+                android:textSize="16sp"
+                android:textColor="@color/iconColor"
+                android:layout_marginTop="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTryQuiz"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Try a Quiz"
+                android:textColor="@color/white"
+                android:background="@drawable/fsub_bg"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

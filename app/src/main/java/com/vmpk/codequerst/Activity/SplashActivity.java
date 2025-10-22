@@ -7,7 +7,8 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
-import com.vmpk.codequerst.R;
+import androidx.core.splashscreen.SplashScreen;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
@@ -19,14 +20,16 @@ public class SplashActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private SharedPreferences sharedPreferences;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private final long MAX_WAIT_TIME = 3000; // 4 sec max wait
+    private final long MAX_WAIT_TIME = 3000; // max 3 sec
     private AtomicBoolean proceed = new AtomicBoolean(false);
     private Runnable timeoutRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // ✅ Install SplashScreen before super.onCreate
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
 
         auth = FirebaseAuth.getInstance();
         sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
@@ -35,10 +38,11 @@ public class SplashActivity extends AppCompatActivity {
         boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
 
         if (user != null && !user.isAnonymous()) {
-            // Google user - wait for data
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+            // Logged in user - wait for Firebase data
+            DatabaseReference userRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(user.getUid());
 
-            // Timeout handler
             timeoutRunnable = () -> {
                 if (proceed.compareAndSet(false, true)) {
                     openHome();
@@ -46,7 +50,6 @@ public class SplashActivity extends AppCompatActivity {
             };
             handler.postDelayed(timeoutRunnable, MAX_WAIT_TIME);
 
-            // Firebase listener
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -62,9 +65,7 @@ public class SplashActivity extends AppCompatActivity {
                         editor.putInt("offline_points", points);
                         editor.apply();
 
-                        // Cancel the timeout to avoid double open
                         handler.removeCallbacks(timeoutRunnable);
-
                         openHome();
                     }
                 }
@@ -79,7 +80,7 @@ public class SplashActivity extends AppCompatActivity {
             });
 
         } else {
-            // Guest or first time - normal  delay
+            // Guest or first-time user
             handler.postDelayed(() -> {
                 if (proceed.compareAndSet(false, true)) {
                     if (auth.getCurrentUser() != null || isGuest) {

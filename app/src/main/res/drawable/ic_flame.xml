@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Base flame -->
+    <path
+        android:fillColor="#FF9600"
+        android:pathData="M12,2
+                          C8,7 9,11 9,11
+                          S7,13 8,16
+                          C10,18 14,18 15,16
+                          S15,12 14,10
+                          C13,7 12,2 12,2z" />
+
+    <!-- Inner highlight -->
+    <path
+        android:fillColor="#FFA500"
+        android:pathData="M12,3
+                          C9,7 10,10 10,10
+                          S9,12 10,14
+                          C11,15 13,15 14,14
+                          S13,10 12,7
+                          C12,4 12,3 12,3z" />
+</vector>

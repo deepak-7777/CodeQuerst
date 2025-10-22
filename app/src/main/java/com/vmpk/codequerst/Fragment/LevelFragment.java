@@ -5,38 +5,60 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ScrollView;
+
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.vmpk.codequerst.Adapter.LevelAdapter;
+import com.vmpk.codequerst.Model.LevelViewModel;
 import com.vmpk.codequerst.R;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class LevelFragment extends Fragment {
 
-    public static LevelFragment newInstance() {
-        return new LevelFragment();
-    }
+    private RecyclerView recyclerView;
+    private LevelAdapter adapter;
+    private List<Integer> levelList = new ArrayList<>();
+    private LevelViewModel viewModel;
+
+    private static final int TOTAL_LEVELS = 100;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_level, container, false);
 
-        View root = view.findViewById(R.id.levelRoot);
+        recyclerView = view.findViewById(R.id.rvLevels);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
-        int nightModeFlags =
-                getResources().getConfiguration().uiMode &
-                        Configuration.UI_MODE_NIGHT_MASK;
+        for (int i = 1; i <= TOTAL_LEVELS; i++) levelList.add(i);
 
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            root.setBackgroundResource(R.drawable.black);
-        } else {
-            root.setBackgroundResource(R.drawable.whitequiz);
-        }
+        adapter = new LevelAdapter(getContext(), levelList, new HashMap<>());
+        recyclerView.setAdapter(adapter);
 
-        // 🟢 Scroll automatically to bottom (Level 1 visible first)
-        ScrollView scrollView = view.findViewById(R.id.scrollViewLevels);
-        if (scrollView != null) {
-            scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
-        }
+        viewModel = new ViewModelProvider(requireActivity()).get(LevelViewModel.class);
+
+        // Observe level completion
+        viewModel.getLevelStatus().observe(getViewLifecycleOwner(), levelStatus -> {
+            adapter.updateStatus(levelStatus);
+        });
+
+        // Observe stars
+        viewModel.getLevelStars().observe(getViewLifecycleOwner(), levelStars -> {
+            adapter.setLevelStars(levelStars);
+        });
+
+        // Night mode background
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES)
+            view.setBackgroundResource(R.drawable.black);
+        else
+            view.setBackgroundResource(R.drawable.whitequiz);
 
         return view;
     }

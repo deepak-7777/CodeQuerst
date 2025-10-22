@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <!-- Toolbar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/friendToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorControlNormal"
+            android:paddingTop="45dp"
+            app:titleTextAppearance="@style/ToolbarTitleBold">
+
+            <TextView
+                android:id="@+id/backFriend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5sp"
+                android:background="@drawable/back"/>
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Play With Friends"-->
+<!--                android:textColor="@color/TextColor"-->
+<!--                android:textStyle="bold"-->
+<!--                android:textSize="21dp"-->
+<!--                android:paddingStart="12sp" />-->
+        </androidx.appcompat.widget.Toolbar>
+
+    </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/aboutText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="3dp"
+            android:textSize="36sp"
+            android:layout_gravity="center"
+            android:text="COMMING SOON"
+            android:layout_marginTop="80dp"
+            android:textStyle="bold"
+            android:textColor="@color/TextColor"
+            android:padding="8dp"
+            android:scrollbars="vertical" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="28dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_friend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#1E90FF"
+            android:text="Go To Home"
+            android:layout_marginTop="20dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:padding="12dp" />
+
+</LinearLayout>
+
+</LinearLayout>

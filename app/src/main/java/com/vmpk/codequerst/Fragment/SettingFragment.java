@@ -1,7 +1,7 @@
 package com.vmpk.codequerst.Fragment;
 
-import static androidx.browser.customtabs.CustomTabsClient.getPackageName;
 
+import android.annotation.SuppressLint;
 import android.content.*;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,6 +11,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.vmpk.codequerst.Activity.AboutActivity;
+import com.vmpk.codequerst.Activity.CoinsActivity;
 import com.vmpk.codequerst.Activity.HomeActivity;
 import com.vmpk.codequerst.Activity.LoginActivity;
 import com.vmpk.codequerst.Activity.PrivacyActivity;
@@ -44,10 +47,11 @@ public class SettingFragment extends Fragment {
     private boolean isGuest;
     private GoogleSignInClient gsc;
     private SharedPreferences sharedPreferences;
-    LinearLayout privacyApp, aboutApp, shareApp, feedbackApp, rateApp, logoutApp;
+    private LinearLayout privacyApp, aboutApp, shareApp, feedbackApp, rateApp, logoutApp,coinStore;
 
     private BroadcastReceiver profileUpdateReceiver;
     private boolean isDataLoaded = false; // load once from cache
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,7 +59,7 @@ public class SettingFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
-        // Init views
+        coinStore = view.findViewById(R.id.coinStore);
         logoutApp = view.findViewById(R.id.logoutApp);
         rateApp = view.findViewById(R.id.rateApp);
         settingImage = view.findViewById(R.id.settingImage);
@@ -90,6 +94,8 @@ public class SettingFragment extends Fragment {
                 loadProfileFromFirebase();
             }
         };
+
+        coinStore.setOnClickListener(v -> startActivity(new Intent(getActivity(), CoinsActivity.class)));
 
         return view;
     }
@@ -207,16 +213,23 @@ public class SettingFragment extends Fragment {
     }
 
     private void loadProfileFromCache() {
-        String name = sharedPreferences.getString("name", "User");
-        String about = sharedPreferences.getString("about", "Welcome Back");
+        boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
+        String name = sharedPreferences.getString("name", isGuest ? "Guest" : "User");
+        String about = sharedPreferences.getString("about", isGuest ? "Welcome Guest" : "Welcome Back");
         String imageUrl = sharedPreferences.getString("profileImage", "");
 
         settingName.setText(name);
         settingAbout.setText(about);
 
-        if (!imageUrl.isEmpty()) {
-            Glide.with(getActivity())
+        if (isGuest) {
+            // Guest mode → Always show initials image (no cached photo)
+            setDefaultProfileImage(name);
+            Glide.with(requireActivity()).clear(settingImage);
+        } else if (!imageUrl.isEmpty()) {
+            Glide.with(requireActivity())
                     .load(imageUrl)
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
                     .circleCrop()
                     .into(settingImage);
         } else {
@@ -224,45 +237,64 @@ public class SettingFragment extends Fragment {
         }
     }
 
+
     private void loadProfileFromFirebase() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null || !isNetworkAvailable()) return;
+        boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
 
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        if (isGuest || user == null) {
+            // 🔹 Guest mode: skip Firebase load, just show initials
+            loadProfileFromCache();
+            return;
+        }
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(user.getUid());
+
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!isAdded()) return;
-                if (!snapshot.exists()) return;
+                if (!snapshot.exists()) {
+                    loadProfileFromCache();
+                    return;
+                }
 
                 String name = snapshot.child("name").getValue(String.class);
                 String about = snapshot.child("about").getValue(String.class);
                 String imageUrl = snapshot.child("profileImage").getValue(String.class);
 
-                if (name != null) settingName.setText(name);
-                if (about != null) settingAbout.setText(about);
+                settingName.setText(name != null ? name : "User");
+                settingAbout.setText(about != null ? about : "Welcome Back");
 
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Glide.with(getActivity())
+                    Glide.with(requireActivity())
                             .load(imageUrl)
+                            .placeholder(R.drawable.ic_person)
+                            .error(R.drawable.ic_person)
                             .circleCrop()
                             .into(settingImage);
-                } else if (name != null) {
+                } else {
                     setDefaultProfileImage(name);
                 }
 
-                // Update cache
+                // 🔹 Cache update
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (name != null) editor.putString("name", name);
-                if (about != null) editor.putString("about", about);
-                if (imageUrl != null) editor.putString("profileImage", imageUrl);
+                editor.putString("name", name != null ? name : "User");
+                editor.putString("about", about != null ? about : "Welcome Back");
+                editor.putString("profileImage", imageUrl != null ? imageUrl : "");
+                editor.putBoolean("isGuest", false);
                 editor.apply();
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {}
+            public void onCancelled(@NonNull DatabaseError error) {
+                loadProfileFromCache();
+            }
         });
     }
+
 
     private void setDefaultProfileImage(String fullName) {
         if (fullName == null || fullName.isEmpty()) fullName = "U";

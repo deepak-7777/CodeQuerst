@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -39,14 +40,14 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
-    LinearLayout c, cpp, python, java, kotlin, javaScript, createQuiz;
-    ChipNavigationBar chipNavigationBar;
-    ScrollView homeScrollView;
-    ShapeableImageView profileImage;
-    TextView userName, tvPoints;
-    SharedPreferences sharedPreferences;
-    FirebaseAuth firebaseAuth;
-    DatabaseReference usersRef;
+   private LinearLayout c, cpp, python, java, kotlin, javaScript, createQuiz, weeklyStreak, playFriend;
+   private ChipNavigationBar chipNavigationBar;
+   private ScrollView homeScrollView;
+   private ShapeableImageView profileImage;
+   private TextView userName, tvPoints, rankPointHome;
+   private SharedPreferences sharedPreferences;
+   private FirebaseAuth firebaseAuth;
+   private DatabaseReference usersRef;
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
     private SwipeRefreshLayout swipeRefresh;
@@ -58,6 +59,9 @@ public class HomeActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
 
+        playFriend = findViewById(R.id.playFriend);
+        weeklyStreak  = findViewById(R.id.weeklyStreak);
+        rankPointHome = findViewById(R.id.rankPointHome);
         c = findViewById(R.id.c);
         cpp = findViewById(R.id.cpp);
         python = findViewById(R.id.python);
@@ -82,6 +86,9 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigation();
 
         profileImage.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, ProfileActivity.class)));
+        rankPointHome.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, PointsActivity.class)));
+        weeklyStreak.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, StreakActivity.class)));
+        playFriend.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, FriendActivity.class)));
 
         swipeRefresh.setOnRefreshListener(() -> {
             loadUserProfile();
@@ -262,9 +269,10 @@ public class HomeActivity extends AppCompatActivity {
 
                 //  Step 2: Agar network hai to Firebase se refresh karo
                 if (isNetworkAvailable()) {
-                    usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    usersRef.addValueEventListener(new ValueEventListener() {
                         @Override
-                        public void onDataChange(DataSnapshot snapshot) {
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
                                 String name = snapshot.child("name").getValue(String.class);
                                 String imageUrl = snapshot.child("profileImage").getValue(String.class);
@@ -273,6 +281,7 @@ public class HomeActivity extends AppCompatActivity {
                                     userName.setText(name);
                                     setDefaultProfileImage(name);
                                 }
+
                                 if (imageUrl != null && !imageUrl.isEmpty()) {
                                     Glide.with(HomeActivity.this)
                                             .load(imageUrl)
@@ -280,24 +289,15 @@ public class HomeActivity extends AppCompatActivity {
                                             .into(profileImage);
                                 }
 
-                                //  Cache update karo
+                                // Cache update
                                 cacheProfileToPrefs(snapshot);
-                            }
-
-                            boolean isFirstTime = sharedPreferences.getBoolean("google_first_time", true);
-                            if (isFirstTime) {
-                                welcomeText.setText("Welcome");
-                                sharedPreferences.edit().putBoolean("google_first_time", false).apply();
-                            } else {
-                                welcomeText.setText("Welcome Back");
                             }
                         }
 
                         @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Agar Firebase fail ho gaya → cached data already visible hai
-                        }
+                        public void onCancelled(@NonNull DatabaseError error) {}
                     });
+
                 } else {
                     //  Agar network off hai → sirf cached data hi rahega
                     welcomeText.setText("Welcome Back");
@@ -404,7 +404,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onBackPressed() {
         new AlertDialog.Builder(this)
                 .setTitle("Exit App")
-                .setMessage("Are you sure you want to exit?")
+                .setMessage("Are you sure you want to exit app?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", (dialog, which) -> finishAffinity())
                 .setNegativeButton("No", (dialog, which) -> dialog.dismiss())

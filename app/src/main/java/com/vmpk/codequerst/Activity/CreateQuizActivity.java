@@ -82,7 +82,10 @@ public class CreateQuizActivity extends AppCompatActivity {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.item_joinquiz);
-        dialog.setCancelable(true);
+//        dialog.setCancelable(true);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+
 
         EditText etJoinQuizCode = dialog.findViewById(R.id.joinQuizText);
         AppCompatButton joinQuizDismiss = dialog.findViewById(R.id.joinQuizDismiss);

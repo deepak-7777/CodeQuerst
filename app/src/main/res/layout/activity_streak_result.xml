@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:orientation="horizontal">
+        <!-- Header showing correct answers / total questions -->
+        <TextView
+            android:id="@+id/tvCorrectAnswers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/iconColor"
+            android:text="Correct Answer  "
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvTotalQuestions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/iconColor"
+            android:textSize="16sp"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+    <!-- Main Card -->
+    <LinearLayout
+        android:id="@+id/cardLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_card_background"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <FrameLayout
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- Circular outline -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/streak_circle_outline" />
+
+            <!-- Inner text -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/streak_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7"
+                    android:textSize="48sp"
+                    android:textColor="#FF9600"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="days"
+                    android:textSize="14sp"
+                    android:textColor="#FF9600"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- Small flame icon -->
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
+                android:src="@drawable/ic_flame"
+                android:tint="#FF9600" />
+        </FrameLayout>
+
+        <!-- Day circles -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <!-- Repeat for each day -->
+            <TextView
+                android:id="@+id/day1"
+                style="@style/DayCircleStyle"
+                android:text="M" />
+            <TextView
+                android:id="@+id/day2"
+                style="@style/DayCircleStyle"
+                android:text="T" />
+            <TextView
+                android:id="@+id/day3"
+                style="@style/DayCircleStyle"
+                android:text="W" />
+            <TextView
+                android:id="@+id/day4"
+                style="@style/DayCircleStyle"
+                android:text="T" />
+            <TextView
+                android:id="@+id/day5"
+                style="@style/DayCircleStyle"
+                android:text="F" />
+            <TextView
+                android:id="@+id/day6"
+                style="@style/DayCircleStyle"
+                android:text="S" />
+            <TextView
+                android:id="@+id/day7"
+                style="@style/DayCircleStyle"
+                android:text="S" />
+        </LinearLayout>
+
+        <!-- Streak message -->
+        <TextView
+            android:id="@+id/dayStreak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 day streak!"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You've reached your daily goal!\nPractice every day to build a streak."
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Continue button -->
+        <Button
+            android:id="@+id/btn_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#1E90FF"
+            android:text="Go To Home"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:padding="12dp" />
+    </LinearLayout>
+
+</LinearLayout>

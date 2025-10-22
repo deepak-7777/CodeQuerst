@@ -1,30 +1,28 @@
 package com.vmpk.codequerst.Activity;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.firebase.database.*;
 import com.vmpk.codequerst.Model.LevelQuiz;
+import com.vmpk.codequerst.Model.LevelViewModel;
 import com.vmpk.codequerst.R;
 
 import java.util.ArrayList;
@@ -40,19 +38,23 @@ public class LevelQuizActivity extends AppCompatActivity {
     private CircularProgressIndicator circularProgressIndicator;
     private View levelLayout, quizToolbar, levelAll;
 
-    private List<LevelQuiz> questionList = new ArrayList<>();
+    private final List<LevelQuiz> questionList = new ArrayList<>();
     private int currentIndex = 0;
+    private int correctCount = 0;
     private int levelNumber;
 
     private CountDownTimer countDownTimer;
     private boolean timerRunning = false;
-    private long timeLeftInMillis = 12000; // 12 seconds per question
+    private long timeLeftInMillis = 12000; // 12 seconds
+
+    private LevelViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_level_quiz);
 
+        // 🔹 Initialize views
         tvQuestionLevel = findViewById(R.id.tvQuestionLevel);
         tvCounterLevel = findViewById(R.id.tvCounterLevel);
         radioGroupLevel = findViewById(R.id.radioGroupLevel);
@@ -63,22 +65,28 @@ public class LevelQuizActivity extends AppCompatActivity {
         levelTitle = findViewById(R.id.level);
         tvTimerLevel = findViewById(R.id.tvTimerLevel);
         circularProgressIndicator = findViewById(R.id.circularProgressLevel);
-
-        // Views for progress visibility
         levelLayout = findViewById(R.id.levelLayout);
         quizToolbar = findViewById(R.id.quizToolbar);
         levelAll = findViewById(R.id.levelAll);
 
         levelNumber = getIntent().getIntExtra("levelNumber", 1);
+
+        // 🔹 Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(LevelViewModel.class);
+
         loadLevelTitle(levelNumber);
         loadQuestionsFromFirebase(levelNumber);
 
+        // 🔹 Option listeners
         option1Level.setOnClickListener(v -> checkAnswer(1, option1Level));
         option2Level.setOnClickListener(v -> checkAnswer(2, option2Level));
         option3Level.setOnClickListener(v -> checkAnswer(3, option3Level));
         option4Level.setOnClickListener(v -> checkAnswer(4, option4Level));
 
-        // 7️ Status bar styling
+        setupStatusBar();
+    }
+
+    private void setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.getDecorView().setSystemUiVisibility(
@@ -97,9 +105,8 @@ public class LevelQuizActivity extends AppCompatActivity {
     }
 
     private boolean isDarkModeOn() {
-        int nightModeFlags =
-                getResources().getConfiguration().uiMode &
-                        Configuration.UI_MODE_NIGHT_MASK;
+        int nightModeFlags = getResources().getConfiguration().uiMode &
+                Configuration.UI_MODE_NIGHT_MASK;
         return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
     }
 
@@ -112,11 +119,7 @@ public class LevelQuizActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String title = snapshot.getValue(String.class);
-                        if (title != null) {
-                            levelTitle.setText("Level " + levelNum + ": " + title);
-                        } else {
-                            levelTitle.setText("Level " + levelNum);
-                        }
+                        levelTitle.setText(title != null ? "Level " + levelNum + ": " + title : "Level " + levelNum);
                     }
 
                     @Override
@@ -127,7 +130,6 @@ public class LevelQuizActivity extends AppCompatActivity {
     }
 
     private void loadQuestionsFromFirebase(int levelNum) {
-        // 🔄 Show loading
         levelLayout.setVisibility(View.VISIBLE);
         quizToolbar.setVisibility(View.GONE);
         levelAll.setVisibility(View.GONE);
@@ -141,21 +143,20 @@ public class LevelQuizActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         questionList.clear();
                         for (DataSnapshot qSnap : snapshot.getChildren()) {
-                            LevelQuiz question = qSnap.getValue(LevelQuiz.class);
-                            if (question != null) questionList.add(question);
+                            LevelQuiz q = qSnap.getValue(LevelQuiz.class);
+                            if (q != null) questionList.add(q);
                         }
 
-                        // 🔓 Hide loading and show quiz
                         levelLayout.setVisibility(View.GONE);
                         quizToolbar.setVisibility(View.VISIBLE);
                         levelAll.setVisibility(View.VISIBLE);
 
                         if (!questionList.isEmpty()) {
                             currentIndex = 0;
+                            correctCount = 0;
                             showQuestion(currentIndex);
                         } else {
-                            Toast.makeText(LevelQuizActivity.this,
-                                    "No questions found for this level", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LevelQuizActivity.this, "No questions found for this level", Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }
@@ -165,8 +166,7 @@ public class LevelQuizActivity extends AppCompatActivity {
                         levelLayout.setVisibility(View.GONE);
                         quizToolbar.setVisibility(View.VISIBLE);
                         levelAll.setVisibility(View.VISIBLE);
-                        Toast.makeText(LevelQuizActivity.this,
-                                "Error loading questions", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LevelQuizActivity.this, "Error loading questions", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -195,11 +195,6 @@ public class LevelQuizActivity extends AppCompatActivity {
         option2Level.setBackgroundResource(R.drawable.createquiz_bg);
         option3Level.setBackgroundResource(R.drawable.createquiz_bg);
         option4Level.setBackgroundResource(R.drawable.createquiz_bg);
-
-        option1Level.setChecked(false);
-        option2Level.setChecked(false);
-        option3Level.setChecked(false);
-        option4Level.setChecked(false);
     }
 
     private void startTimer() {
@@ -239,11 +234,12 @@ public class LevelQuizActivity extends AppCompatActivity {
         stopTimer();
         disableOptions();
 
-        LevelQuiz currentQuestion = questionList.get(currentIndex);
-        int correctAnswer = currentQuestion.getAnswer();
+        LevelQuiz current = questionList.get(currentIndex);
+        int correctAnswer = current.getAnswer();
 
         if (selectedOption == correctAnswer) {
             selectedButton.setBackgroundResource(R.drawable.option_correct_bg);
+            correctCount++;
         } else {
             selectedButton.setBackgroundResource(R.drawable.option_wrong_bg);
             highlightCorrectAnswer(correctAnswer);
@@ -253,14 +249,10 @@ public class LevelQuizActivity extends AppCompatActivity {
     }
 
     private void highlightCorrectAnswer(int correctAnswer) {
-        if (correctAnswer == 1)
-            option1Level.setBackgroundResource(R.drawable.option_correct_bg);
-        else if (correctAnswer == 2)
-            option2Level.setBackgroundResource(R.drawable.option_correct_bg);
-        else if (correctAnswer == 3)
-            option3Level.setBackgroundResource(R.drawable.option_correct_bg);
-        else if (correctAnswer == 4)
-            option4Level.setBackgroundResource(R.drawable.option_correct_bg);
+        if (correctAnswer == 1) option1Level.setBackgroundResource(R.drawable.option_correct_bg);
+        else if (correctAnswer == 2) option2Level.setBackgroundResource(R.drawable.option_correct_bg);
+        else if (correctAnswer == 3) option3Level.setBackgroundResource(R.drawable.option_correct_bg);
+        else if (correctAnswer == 4) option4Level.setBackgroundResource(R.drawable.option_correct_bg);
     }
 
     private void disableOptions() {
@@ -287,21 +279,52 @@ public class LevelQuizActivity extends AppCompatActivity {
     }
 
     private void levelComplete() {
-        markLevelCompleteInFirebase(levelNumber);
-        Toast.makeText(this, "🎉 Level " + levelNumber + " completed!", Toast.LENGTH_SHORT).show();
+        stopTimer();
+        int stars = calculateStars();
+        LevelViewModel viewModel = new ViewModelProvider(this).get(LevelViewModel.class);
+        // ✅ Save star only if not already saved
+        viewModel.markLevelComplete(levelNumber, stars);
+        // 🔹 Show star from ViewModel (Firebase/LiveData)
+        viewModel.getLevelStars().observe(this, starsMap -> {
+            int starToShow = starsMap.getOrDefault(levelNumber, stars);
+            String starEmoji = starToShow == 3 ? "⭐⭐⭐" :
+                    starToShow == 2 ? "⭐⭐" :
+                            starToShow == 1 ? "⭐" : "❌";
+//            Toast.makeText(this,
+//                    "🎉 Level " + levelNumber + " Completed! " + starEmoji,
+//                    Toast.LENGTH_LONG).show();
+        });
+
+        Intent intent = new Intent(LevelQuizActivity.this, LevelResultActivity.class);
+        intent.putExtra("levelNumber", levelNumber);
+        intent.putExtra("totalQuestions", questionList.size());
+        intent.putExtra("correctAnswers", correctCount);
+        startActivity(intent);
+        finish();
         finish();
     }
 
-    private void markLevelCompleteInFirebase(int levelNumber) {
+    private int calculateStars() {
+        int total = questionList.size();
+        if (total == 0) return 0;
+        float ratio = (float) correctCount / total;
+        if (ratio >= 0.9f) return 3;
+        else if (ratio >= 0.6f) return 2;
+        else if (ratio >= 0.3f) return 1;
+        else return 0;
+    }
+    private void saveProgressToFirebase(int levelNumber, int stars) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
         DatabaseReference ref = FirebaseDatabase.getInstance()
                 .getReference("userProgress")
-                .child(user.getUid());
-        // User ka email bhi save kar do
+                .child(user.getUid())
+                .child("level_" + levelNumber);
+
         Map<String, Object> updates = new HashMap<>();
-        updates.put("level_" + levelNumber + "_complete", true);
+        updates.put("complete", true);
+        updates.put("stars", stars);
         updates.put("email", user.getEmail());
 
         ref.updateChildren(updates);
@@ -322,9 +345,7 @@ public class LevelQuizActivity extends AppCompatActivity {
                     stopTimer();
                     finish();
                 })
-                .setNegativeButton("No", (dialog, which) -> {
-                    dialog.dismiss();
-                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                 .setCancelable(false)
                 .show();
     }

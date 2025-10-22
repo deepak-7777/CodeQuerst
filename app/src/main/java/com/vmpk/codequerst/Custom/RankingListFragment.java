@@ -1,5 +1,7 @@
 package com.vmpk.codequerst.Custom;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +13,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -23,7 +27,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
+import com.vmpk.codequerst.Activity.HomeActivity;
+import com.vmpk.codequerst.Activity.LoginActivity;
 import com.vmpk.codequerst.Activity.RankingViewActivity;
 import com.vmpk.codequerst.Adapter.LeaderboardAdapter;
 import com.vmpk.codequerst.Model.UserScore;
@@ -35,14 +43,15 @@ public class RankingListFragment extends Fragment {
     private boolean showWeekly;
     private RecyclerView recyclerLeaderboard;
     private LeaderboardAdapter adapter;
-    private LinearLayout podiumLayout;
+    private LinearLayout podiumLayout, emptyStateLayout;
     private ProgressBar progressRanking;
     private TextView tvFirstName, tvFirstPoints, tvSecondName, tvSecondPoints, tvThirdName, tvThirdPoints;
-    private ImageView imgFirst, imgSecond, imgThird;
+    private ImageView imgFirst, imgSecond, imgThird, weeklyDialogBox;
     private SwipeRefreshLayout swipeRanking;
     private SharedPreferences sharedPreferences;
     private boolean isGuest;
-    // ✅ Cache static variables
+    private MaterialButton btnTryQuiz;
+
     private static List<UserScore> cachedLeaderboard = null;
     private static long lastLoadedTime = 0;
 
@@ -72,55 +81,140 @@ public class RankingListFragment extends Fragment {
         tvThirdPoints = view.findViewById(R.id.tvThirdPoints);
         swipeRanking = view.findViewById(R.id.swipeRanking);
 
+        emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
+        btnTryQuiz = view.findViewById(R.id.btnTryQuiz);
+
         sharedPreferences = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         isGuest = sharedPreferences.getBoolean("isGuest", false);
 
-        // ✅ Swipe-to-refresh: always reload from Firebase
-        swipeRanking.setOnRefreshListener(() -> {
-            loadLeaderboard(true); // Force reload
+        // ✅ Show Guest Dialog only once after install or logout
+        if (isGuest) {
+            showGuestDialogOnce();
+        }
+
+        btnTryQuiz.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), HomeActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
         });
 
-        adapter.setOnItemClickListener(user -> openUserDetail(user));
+        swipeRanking.setOnRefreshListener(() -> loadLeaderboard(true));
+        adapter.setOnItemClickListener(this::openUserDetail);
 
-        // ✅ Use cache if available, otherwise load Firebase
         if (cachedLeaderboard != null && !cachedLeaderboard.isEmpty()) {
             displayLeaderboard(cachedLeaderboard);
         } else {
             loadLeaderboard(false);
         }
 
+        weeklyDialogBox = view.findViewById(R.id.weeklyDialogBox);
+        if (weeklyDialogBox != null) {
+            weeklyDialogBox.setVisibility(showWeekly ? View.VISIBLE : View.GONE);
+            weeklyDialogBox.setOnClickListener(v -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Weekly Leaderboard Info")
+                        .setMessage("This leaderboard shows weekly points from Monday to Sunday. Scores reset every Monday.")
+                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                        .show();
+            });
+        }
+
+
         return view;
     }
 
     // ===========================================================
-    // 🔹 Load Leaderboard Data (Firebase)
+    // 🔹 Guest Dialog (Shown only once)
+    // ===========================================================
+    private void showGuestDialogOnce() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        boolean isDialogShown = prefs.getBoolean("isGuestDialogShown", false);
+
+        if (!isDialogShown) {
+            Dialog dialog = new Dialog(requireContext());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.guest_dialog);
+            dialog.setCancelable(false);
+
+            Button btnDismiss = dialog.findViewById(R.id.btnDismiss);
+            Button btnSignIn = dialog.findViewById(R.id.btnSignIn);
+
+            btnDismiss.setOnClickListener(v -> dialog.dismiss());
+
+            btnSignIn.setOnClickListener(v -> {
+                if (isGuest) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.remove("name");
+                    editor.remove("email");
+                    editor.remove("phone");
+                    editor.remove("about");
+                    editor.putBoolean("isGuest", false);
+                    editor.apply();
+
+                    FirebaseAuth.getInstance().signOut();
+
+                    Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                }
+            });
+
+            dialog.show();
+
+            // ✅ Mark dialog as shown once
+            prefs.edit().putBoolean("isGuestDialogShown", true).apply();
+        }
+    }
+
+    // ===========================================================
+    // 🔹 Load Leaderboard Data
     // ===========================================================
     private void loadLeaderboard(boolean fromSwipe) {
-        if (!fromSwipe) {
-            progressRanking.setVisibility(View.VISIBLE);
-        }
+        if (!fromSwipe) progressRanking.setVisibility(View.VISIBLE);
 
         recyclerLeaderboard.setVisibility(View.GONE);
         podiumLayout.setVisibility(View.GONE);
+        emptyStateLayout.setVisibility(View.GONE);
 
         DatabaseReference leaderboardRef = FirebaseDatabase.getInstance().getReference("leaderboard");
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        // ✅ Weekly calculation setup
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        long weekStartMillis = calendar.getTimeInMillis();
+        int currentWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+
+        // ✅ Auto-reset weekly scores once every Monday
+        SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        int lastWeek = prefs.getInt("lastWeek", -1);
+        if (lastWeek != currentWeek) {
+            leaderboardRef.get().addOnSuccessListener(snapshot -> {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    child.getRef().child("weeklyPoints").setValue(0);
+                }
+            });
+            prefs.edit().putInt("lastWeek", currentWeek).apply();
+        }
 
         leaderboardRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<UserScore> tempList = new ArrayList<>();
                 if (!snapshot.exists()) {
-                    progressRanking.setVisibility(View.GONE);
-                    recyclerLeaderboard.setVisibility(View.VISIBLE);
-                    podiumLayout.setVisibility(View.VISIBLE);
+                    showEmptyState();
                     swipeRanking.setRefreshing(false);
                     return;
                 }
 
                 int totalEntries = (int) snapshot.getChildrenCount();
                 final int[] processed = {0};
-                long oneWeekAgo = System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000;
 
                 for (DataSnapshot child : snapshot.getChildren()) {
                     String uid = child.getKey();
@@ -142,16 +236,15 @@ public class RankingListFragment extends Fragment {
                                 finalScoreFinal.setProfileImage(userSnap.child("profileImage").getValue(String.class));
                             }
 
+                            // ✅ Weekly points logic (Monday → Sunday)
                             if (showWeekly) {
                                 int weeklyPoints = 0;
                                 if (finalScoreFinal.getQuizzes() != null) {
-                                    HashSet<String> attemptedTopics = new HashSet<>();
-                                    for (Map.Entry<String, UserScore.QuizAttempt> entry : finalScoreFinal.getQuizzes().entrySet()) {
+                                    for (Map.Entry<String, UserScore.QuizAttempt> entry :
+                                            finalScoreFinal.getQuizzes().entrySet()) {
                                         UserScore.QuizAttempt q = entry.getValue();
-                                        if (q != null && q.getTimestamp() >= oneWeekAgo &&
-                                                !attemptedTopics.contains(entry.getKey())) {
+                                        if (q != null && q.getTimestamp() >= weekStartMillis) {
                                             weeklyPoints += q.getPoints();
-                                            attemptedTopics.add(entry.getKey());
                                         }
                                     }
                                 }
@@ -161,7 +254,8 @@ public class RankingListFragment extends Fragment {
                             tempList.add(finalScoreFinal);
                             processed[0]++;
                             if (processed[0] == totalEntries) {
-                                displayLeaderboard(tempList);
+                                if (tempList.isEmpty()) showEmptyState();
+                                else displayLeaderboard(tempList);
                                 swipeRanking.setRefreshing(false);
                             }
                         }
@@ -170,7 +264,8 @@ public class RankingListFragment extends Fragment {
                         public void onCancelled(@NonNull DatabaseError error) {
                             processed[0]++;
                             if (processed[0] == totalEntries) {
-                                displayLeaderboard(tempList);
+                                if (tempList.isEmpty()) showEmptyState();
+                                else displayLeaderboard(tempList);
                                 swipeRanking.setRefreshing(false);
                             }
                         }
@@ -180,12 +275,20 @@ public class RankingListFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                progressRanking.setVisibility(View.GONE);
-                recyclerLeaderboard.setVisibility(View.VISIBLE);
-                podiumLayout.setVisibility(View.VISIBLE);
+                showEmptyState();
                 swipeRanking.setRefreshing(false);
             }
         });
+    }
+
+    // ===========================================================
+    // 🔹 Empty State
+    // ===========================================================
+    private void showEmptyState() {
+        progressRanking.setVisibility(View.GONE);
+        recyclerLeaderboard.setVisibility(View.GONE);
+        podiumLayout.setVisibility(View.GONE);
+        emptyStateLayout.setVisibility(View.VISIBLE);
     }
 
     // ===========================================================
@@ -195,10 +298,12 @@ public class RankingListFragment extends Fragment {
         cachedLeaderboard = new ArrayList<>(list);
         lastLoadedTime = System.currentTimeMillis();
 
-        if (showWeekly) {
-            list.sort((u1, u2) -> u2.getWeeklyPoints() - u1.getWeeklyPoints());
-        } else {
-            list.sort((u1, u2) -> u2.getTotalPoints() - u1.getTotalPoints());
+        if (showWeekly) list.sort((u1, u2) -> u2.getWeeklyPoints() - u1.getWeeklyPoints());
+        else list.sort((u1, u2) -> u2.getTotalPoints() - u1.getTotalPoints());
+
+        if (list.isEmpty()) {
+            showEmptyState();
+            return;
         }
 
         if (list.size() > 0) setPodium(list.get(0), imgFirst, tvFirstName, tvFirstPoints);
@@ -211,6 +316,7 @@ public class RankingListFragment extends Fragment {
         progressRanking.setVisibility(View.GONE);
         recyclerLeaderboard.setVisibility(View.VISIBLE);
         podiumLayout.setVisibility(View.VISIBLE);
+        emptyStateLayout.setVisibility(View.GONE);
     }
 
     // ===========================================================
@@ -243,13 +349,15 @@ public class RankingListFragment extends Fragment {
     }
 
     // ===========================================================
-    // 🔹 Generate default profile initials
+    // 🔹 Default initials for profile
     // ===========================================================
     private void setDefaultProfileImage(String fullName, ImageView imageView) {
         if (fullName == null || fullName.isEmpty()) fullName = "U";
         String[] words = fullName.trim().split(" ");
         String initials = "";
-        for (String w : words) if (!w.isEmpty() && initials.length() < 2) initials += w.charAt(0);
+        for (String w : words)
+            if (!w.isEmpty() && initials.length() < 2)
+                initials += w.charAt(0);
         initials = initials.toUpperCase();
 
         int size = 120;

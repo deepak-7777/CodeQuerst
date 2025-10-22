@@ -7,8 +7,19 @@ public class LevelQuiz {
     private String option3;
     private String option4;
     private String correctAnswer;
+    private int stars = 0; // ⭐
 
     public LevelQuiz() {}
+
+    public LevelQuiz(String question, String option1, String option2, String option3, String option4, String correctAnswer) {
+        this.question = question;
+        this.option1 = option1;
+        this.option2 = option2;
+        this.option3 = option3;
+        this.option4 = option4;
+        this.correctAnswer = correctAnswer;
+        this.stars = 0;
+    }
 
     public String getQuestion() { return question; }
     public String getOption1() { return option1; }
@@ -16,6 +27,7 @@ public class LevelQuiz {
     public String getOption3() { return option3; }
     public String getOption4() { return option4; }
     public String getCorrectAnswer() { return correctAnswer; }
+    public int getStars() { return stars; }
 
     public void setQuestion(String question) { this.question = question; }
     public void setOption1(String option1) { this.option1 = option1; }
@@ -23,26 +35,26 @@ public class LevelQuiz {
     public void setOption3(String option3) { this.option3 = option3; }
     public void setOption4(String option4) { this.option4 = option4; }
     public void setCorrectAnswer(String correctAnswer) { this.correctAnswer = correctAnswer; }
+    public void setStars(int stars) { this.stars = stars; }
 
-    // ✅ Add this method to work like QuizActivity expects
     public int getAnswer() {
-        if (correctAnswer == null) return -1;
+        if (correctAnswer == null || correctAnswer.trim().isEmpty()) return -1;
 
-        // If correctAnswer is stored as a number ("1", "2", "3", "4")
+        String ca = correctAnswer.trim();
         try {
-            int answerIndex = Integer.parseInt(correctAnswer.trim());
-            if (answerIndex >= 1 && answerIndex <= 4) {
-                return answerIndex;
-            }
+            int idx = Integer.parseInt(ca);
+            if (idx >= 1 && idx <= 4) return idx;
         } catch (NumberFormatException ignored) {}
 
-        // Otherwise, match text with options
-        String ca = correctAnswer.trim();
         if (option1 != null && ca.equalsIgnoreCase(option1.trim())) return 1;
         if (option2 != null && ca.equalsIgnoreCase(option2.trim())) return 2;
         if (option3 != null && ca.equalsIgnoreCase(option3.trim())) return 3;
         if (option4 != null && ca.equalsIgnoreCase(option4.trim())) return 4;
 
-        return -1; // No match found
+        return -1;
+    }
+
+    public boolean isCorrect(int selectedIndex) {
+        return getAnswer() == selectedIndex;
     }
 }

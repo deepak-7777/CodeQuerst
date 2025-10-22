@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <!-- 🖼 Top Image Banner -->
+    <ImageView
+        android:id="@+id/imgResultBanner"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/google"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Result Banner"/>
+
+    <!-- 🎉 Congratulation Text -->
+    <TextView
+        android:id="@+id/tvCongratulation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎉 Congratulations!"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#FF9800"
+        android:gravity="center"/>
+
+    <!-- ⭐ Stars -->
+    <LinearLayout
+        android:id="@+id/starLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <ImageView
+            android:id="@+id/star1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_star_yellow"
+            android:layout_margin="4dp"/>
+
+        <ImageView
+            android:id="@+id/star2"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_star_yellow"
+            android:layout_margin="4dp"/>
+
+        <ImageView
+            android:id="@+id/star3"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_star_yellow"
+            android:layout_margin="4dp"/>
+    </LinearLayout>
+
+    <!-- 📊 Question Stats -->
+    <TextView
+        android:id="@+id/tvQuestionStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Questions: 10 | Correct: 7"
+        android:textSize="18sp"
+        android:textColor="@color/TextColor"
+        android:gravity="center"
+        android:layout_marginTop="24dp"/>
+
+    <!-- 🎯 Motivational Text -->
+    <TextView
+        android:id="@+id/tvMotivation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Keep going, next level awaits!"
+        android:textSize="16sp"
+        android:textColor="@color/iconColor"
+        android:gravity="center"
+        android:layout_marginTop="12dp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnNext"
+        style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/guest_bg"
+        android:layout_marginTop="32dp"
+        android:text="Next"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="19sp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnExit"
+        style="@android:style/Widget.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fsub_bg"
+        android:layout_marginTop="32dp"
+        android:text="Exit"
+        android:textColor="@color/white"
+        android:textSize="17sp"/>
+
+</LinearLayout>

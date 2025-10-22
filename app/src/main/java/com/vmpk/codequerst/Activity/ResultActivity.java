@@ -1,5 +1,6 @@
 package com.vmpk.codequerst.Activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -188,9 +189,14 @@ public class ResultActivity extends AppCompatActivity {
                     if (!task.isSuccessful()) {
                         Toast.makeText(ResultActivity.this, "Leaderboard update failed", Toast.LENGTH_SHORT).show();
                     } else {
-                        loadAndSetRank();
+                        loadAndSetRank(); // existing code
+                        // Launch PointsActivity after saving leaderboard
+//                        Intent intent = new Intent(ResultActivity.this, PointsActivity.class);
+//                        intent.putExtra("uid", currentUid); // Pass UID to fetch user-specific points
+//                        startActivity(intent);
                     }
                 });
+
             }
 
             @Override

@@ -16,6 +16,21 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="DayCircleStyle">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/day_circle_bg</item>
+        <item name="android:textColor">#FF9600</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+
+
+
+
 
 </resources>
 

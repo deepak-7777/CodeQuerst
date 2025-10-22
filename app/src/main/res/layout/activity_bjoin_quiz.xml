@@ -92,11 +92,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="CREATOR DETAILS &amp; RESULT"
+                android:text="RESULT"
                 android:textColor="@color/iconColor"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
+            <!-- android:text="CREATOR DETAILS &amp; RESULT"-->
             <Space
                 android:layout_width="1dp"
                 android:layout_height="12dp" />
@@ -108,30 +109,30 @@
                 android:orientation="vertical"
                 android:showDividers="middle">
 
-                <TextView
-                    android:id="@+id/creatorName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingVertical="6dp"
-                    android:text="Name : "
-                    android:textStyle="bold"
-                    android:textSize="16sp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/creatorName"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:paddingVertical="6dp"-->
+<!--                    android:text="Name : "-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:textSize="16sp" />-->
 
-                <TextView
-                    android:id="@+id/creatorRank"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingVertical="6dp"
-                    android:text="Rank : "
-                    android:textSize="16sp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/creatorRank"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:paddingVertical="6dp"-->
+<!--                    android:text="Rank : "-->
+<!--                    android:textSize="16sp" />-->
 
-                <TextView
-                    android:id="@+id/creatorPoints"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingVertical="6dp"
-                    android:text="Points : "
-                    android:textSize="16sp" />
+<!--                <TextView-->
+<!--                    android:id="@+id/creatorPoints"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:paddingVertical="6dp"-->
+<!--                    android:text="Points : "-->
+<!--                    android:textSize="16sp" />-->
 
                 <TextView
                     android:id="@+id/tvQuestionsAsked"
