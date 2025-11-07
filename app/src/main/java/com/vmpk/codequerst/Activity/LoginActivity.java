@@ -36,7 +36,7 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
     private LinearLayout btnGoogle;
-    private AppCompatButton btnGuest;
+    private AppCompatButton btnGuest, btnEmail;
     private FirebaseAuth auth;
     private GoogleSignInClient gsc;
     private int RC_SIGN_IN = 100;
@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         // Views
         btnGoogle = findViewById(R.id.btnGoogle);
         btnGuest = findViewById(R.id.btnGuest);
+//        btnEmail = findViewById(R.id.btnEmail);
         loginProgressBar = findViewById(R.id.loginProgressBar);
 
         auth = FirebaseAuth.getInstance();
@@ -79,6 +80,13 @@ public class LoginActivity extends AppCompatActivity {
 
         // Status bar styling
         styleStatusBar();
+
+//        btnEmail.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(LoginActivity.this, LoginEmailActivity.class));
+//            }
+//        });
     }
 
     private void styleStatusBar() {
@@ -168,26 +176,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-//    private void saveUserToRealtimeDatabase(FirebaseUser user) {
-//        if (user == null) return;
-//
-//        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-//
-//        usersRef.get().addOnSuccessListener(snapshot -> {
-//            Map<String, Object> userData = new HashMap<>();
-//
-//            if (!snapshot.hasChild("name") || snapshot.child("name").getValue(String.class).isEmpty()) {
-//                userData.put("name", user.getDisplayName() != null ? user.getDisplayName() : "User");
-//            }
-//
-//            userData.put("email", user.getEmail());
-//            userData.put("phone", snapshot.hasChild("phone") ? snapshot.child("phone").getValue(String.class) : "");
-//            userData.put("about", snapshot.hasChild("about") ? snapshot.child("about").getValue(String.class) : "");
-//            userData.put("profileImage", snapshot.hasChild("profileImage") ? snapshot.child("profileImage").getValue(String.class) : "");
-//
-//            usersRef.updateChildren(userData);
-//        });
-//    }
 private void saveUserToRealtimeDatabase(FirebaseUser user) {
     if (user == null) return;
 

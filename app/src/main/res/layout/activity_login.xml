@@ -80,7 +80,19 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Continue with Guest Button -->
+<!--            &lt;!&ndash; Continue with Guest Button &ndash;&gt;-->
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/btnEmail"-->
+<!--                style="@android:style/Widget.Button"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/fsub_bg"-->
+<!--                android:padding="12dp"-->
+<!--                android:text="Continue with Email"-->
+<!--                android:layout_marginBottom="16dp"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textStyle="bold" />-->
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnGuest"
                 style="@android:style/Widget.Button"

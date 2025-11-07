@@ -2,6 +2,8 @@ package com.vmpk.codequerst.Activity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -82,10 +84,10 @@ public class CreateQuizActivity extends AppCompatActivity {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.item_joinquiz);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 //        dialog.setCancelable(true);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
-
 
         EditText etJoinQuizCode = dialog.findViewById(R.id.joinQuizText);
         AppCompatButton joinQuizDismiss = dialog.findViewById(R.id.joinQuizDismiss);

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "207714362050-f11iqh21tbklnm8vos95hqqldek93gmg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vmpk.codequerst",
+            "certificate_hash": "0068ff6669f52ff13b655739c2ca8c2efd667b3b"
+          }
+        },
+        {
           "client_id": "207714362050-h12nk935ir622dgmbhims2tu0d8c7shv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

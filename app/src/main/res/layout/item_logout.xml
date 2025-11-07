@@ -9,8 +9,8 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/dialogTitle"
-        android:text="Guest Mode Active"
+        android:id="@+id/logoutTitle"
+        android:text="Logging Out"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/TextColor"
@@ -19,8 +19,8 @@
 
     <!-- Message -->
     <TextView
-        android:id="@+id/dialogMessage"
-        android:text="You’re currently exploring in Guest Mode. 🚀\n\nYou can view the leaderboard, but your name won’t appear here.\n\nSign in with Google to climb the rankings and showcase your skills!"
+        android:id="@+id/logoutMessage"
+        android:text="Are you sure, do you want to logout?"
         android:textSize="15sp"
         android:textColor="@color/iconColor"
         android:layout_marginTop="10dp"
@@ -35,12 +35,13 @@
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnDismiss"
+            android:id="@+id/logoutDismiss"
             style="@android:style/Widget.Button"
             android:layout_width="90dp"
             android:layout_height="40dp"
+            android:textColor="@color/white"
             android:background="@drawable/guest_bg"
-            android:text="Dismiss"
+            android:text="No"
             android:textSize="17sp"/>
 
         <!-- Spacer -->
@@ -50,12 +51,13 @@
             android:layout_weight="1" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnSignIn"
+            android:id="@+id/logoutSignIn"
             style="@android:style/Widget.Button"
             android:layout_width="90dp"
             android:layout_height="40dp"
+            android:textColor="@color/white"
             android:background="@drawable/fsub_bg"
-            android:text="Sign in"
+            android:text="Yes"
             android:textSize="18sp" />
     </LinearLayout>
 </LinearLayout>

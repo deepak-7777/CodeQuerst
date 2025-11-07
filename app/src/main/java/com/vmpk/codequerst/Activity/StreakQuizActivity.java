@@ -30,22 +30,19 @@ import java.util.Calendar;
 import java.util.List;
 
 public class StreakQuizActivity extends AppCompatActivity {
-
     LinearLayout progressBarLayout;
     Toolbar streakToolbar;
     TextView tvTitle, tvQuestion, tvCounter, tvTimer;
     RadioGroup radioGroup;
     RadioButton option1, option2, option3, option4;
     CircularProgressIndicator circularProgressStreak;
-
     DatabaseReference databaseReference;
     List<Question> questionList = new ArrayList<>();
     int currentIndex = 0;
     CountDownTimer countDownTimer;
     boolean timerRunning = false;
     int timePerQuestion = 12; // seconds
-
-    String streakStartDate = "2025-10-18"; // first day of streak
+    String streakStartDate = "2025-11-10"; // first day of streak
     String dayKey;
     int correctCount = 0; // ✅ to count correct answers
 

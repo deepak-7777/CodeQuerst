@@ -4,6 +4,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:\\Users\\globa\\OneDrive\\Desktop\\CodeQuerst")
+            storePassword = "vijay@maya#"
+            keyPassword = "vijay@maya#"
+            keyAlias = "key0"
+        }
+    }
     namespace = "com.vmpk.codequerst"
     compileSdk = 36
 
@@ -11,8 +19,8 @@ android {
         applicationId = "com.vmpk.codequerst"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -24,6 +32,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -59,7 +68,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     ///    profile image ko circle shape mai lane ke liye
     implementation("com.google.android.material:material:1.10.0")
-       ////     chip navigation for homActivity in menu 
+       ////     chip navigation for homActivity in menu
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     ////   homeActivity mai refresh button ke liye
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")

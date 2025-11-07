@@ -2,11 +2,14 @@ package com.vmpk.codequerst.Fragment;
 
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.*;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -14,6 +17,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +31,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.vmpk.codequerst.Activity.AboutActivity;
 import com.vmpk.codequerst.Activity.CoinsActivity;
 import com.vmpk.codequerst.Activity.HomeActivity;
@@ -140,11 +145,16 @@ public class SettingFragment extends Fragment {
         shareApp.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            String playStoreLink = "https://play.google.com/store/apps/details?id=" + v.getContext().getPackageName();
-            String shareMessage = "Check out this amazing Quiz App! 🎯 Test your knowledge and have fun!\n\nDownload now:\n" + playStoreLink;
+
+            // ✅ Yahan apne APKPure app ka exact link daalein
+            String apkPureLink = "https://86xf0kqg.r.ap-southeast-1.awstrack.me/L0/https:%2F%2Fapkpure.com%2Fp%2Fcom.vmpk.codequerst/1/010e019a4e69b6e3-3fb0f6ee-cde0-4291-9e5a-3360158953dc-000000/H56GsrgRGuYfT-mduJDnmBb7a5k=235";
+
+            String shareMessage = "Check out this amazing Quiz App! 🎯 Test your knowledge and have fun!\n\nDownload now:\n" + apkPureLink;
+
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         });
+
 
         rateApp.setOnClickListener(v -> {
             try {
@@ -155,48 +165,6 @@ public class SettingFragment extends Fragment {
                         Uri.parse("https://play.google.com/store/apps/details?id=" + v.getContext().getPackageName())));
             }
         });
-
-        logoutApp.setOnClickListener(v -> {
-            if (isGuest) {
-                // Clear guest data from SharedPreferences
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("name");
-                editor.remove("email");
-                editor.remove("phone");
-                editor.remove("about");
-                editor.putBoolean("isGuest", false);
-                editor.apply();
-
-                FirebaseAuth.getInstance().signOut();
-
-                // Go to LoginActivity
-                Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                requireActivity().finish();
-            } else {
-                // Firebase + Google Sign Out
-                FirebaseAuth.getInstance().signOut();
-
-                // Initialize GoogleSignInClient if null
-                if (gsc == null) {
-                    gsc = GoogleSignIn.getClient(requireActivity(),
-                            new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(
-                                    com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                    .requestEmail()
-                                    .build());
-                }
-
-                gsc.signOut().addOnCompleteListener(task -> {
-                    Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    requireActivity().finish();
-                });
-            }
-        });
-
-
 
         feedbackApp.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -210,7 +178,73 @@ public class SettingFragment extends Fragment {
                 Toast.makeText(getActivity(), "No email app found", Toast.LENGTH_SHORT).show();
             }
         });
+
+        logoutApp.setOnClickListener(v -> showLogoutDialog());
     }
+
+    private void showLogoutDialog() {
+        // Create Dialog
+        Dialog dialog = new Dialog(requireActivity());
+        dialog.setContentView(R.layout.item_logout);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        // Find Buttons
+        AppCompatButton btnNo = dialog.findViewById(R.id.logoutDismiss);
+        AppCompatButton btnYes = dialog.findViewById(R.id.logoutSignIn);
+
+        // "No" → Just Close Dialog
+        btnNo.setOnClickListener(v -> dialog.dismiss());
+
+        // "Yes" → Perform Logout
+        btnYes.setOnClickListener(v -> {
+            dialog.dismiss(); // Close dialog
+            performLogout();  // Logout function
+        });
+
+        dialog.show();
+    }
+
+    private void performLogout() {
+        if (isGuest) {
+            // Clear guest data from SharedPreferences
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove("name");
+            editor.remove("email");
+            editor.remove("phone");
+            editor.remove("about");
+            editor.putBoolean("isGuest", false);
+            editor.apply();
+
+            FirebaseAuth.getInstance().signOut();
+
+            // Go to LoginActivity
+            Intent intent = new Intent(requireActivity(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            requireActivity().finish();
+        } else {
+            // Firebase + Google Sign Out
+            FirebaseAuth.getInstance().signOut();
+
+            // Initialize GoogleSignInClient if null
+            if (gsc == null) {
+                gsc = GoogleSignIn.getClient(requireActivity(),
+                        new com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(
+                                com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestEmail()
+                                .build());
+            }
+
+            gsc.signOut().addOnCompleteListener(task -> {
+                Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                requireActivity().finish();
+            });
+        }
+    }
+
+
 
     private void loadProfileFromCache() {
         boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
