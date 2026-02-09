@@ -66,7 +66,7 @@
                     android:id="@+id/streak_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7"
+                    android:text="0"
                     android:textSize="48sp"
                     android:textColor="#FF9600"
                     android:textStyle="bold" />
@@ -134,7 +134,7 @@
             android:id="@+id/dayStreak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="5 day streak!"
+            android:text=" day streak!"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#333333"

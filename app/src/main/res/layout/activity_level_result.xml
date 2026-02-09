@@ -12,7 +12,7 @@
         android:id="@+id/imgResultBanner"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@drawable/google"
+        android:src="@drawable/win"
         android:scaleType="centerCrop"
         android:layout_marginBottom="16dp"
         android:contentDescription="Result Banner"/>
@@ -88,7 +88,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/guest_bg"
         android:layout_marginTop="32dp"
-        android:text="Next"
+        android:text="Next Level"
         android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="19sp"/>
@@ -100,7 +100,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/fsub_bg"
         android:layout_marginTop="32dp"
-        android:text="Exit"
+        android:text="Home"
         android:textColor="@color/white"
         android:textSize="17sp"/>
 

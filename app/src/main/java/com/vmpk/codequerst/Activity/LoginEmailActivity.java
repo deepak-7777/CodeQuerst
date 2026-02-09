@@ -83,7 +83,7 @@ public class LoginEmailActivity extends AppCompatActivity {
     }
 
     // ✅ For "Sign Up" Button (XML से onClick में जुड़ा हुआ है)
-    public void signup(View view) {
-        startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
-    }
+//    public void signup(View view) {
+//        startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
+//    }
 }

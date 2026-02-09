@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "207714362050-p51dhdidqq60nsuj1kpn9r31a1gciodn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vmpk.codequerst",
+            "certificate_hash": "30e827eb26afda4ed4037c7c0a77211153eb20ca"
+          }
+        },
+        {
           "client_id": "207714362050-iljhl6q39aj20kehc5abubglmbj6dqv1.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -1,15 +1,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Loading Layout -->
     <LinearLayout
         android:id="@+id/loadingProfile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <ProgressBar
@@ -18,7 +19,6 @@
             android:layout_height="45dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/iconColor" />
-
     </LinearLayout>
 
     <!-- Main Content -->
@@ -31,42 +31,42 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <!-- Toolbar -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/ProfileToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:paddingTop="38dp"
-                android:background="@color/colorControlNormal"
-                app:titleTextAppearance="@style/ToolbarTitleBold">
-
-                <TextView
-                    android:id="@+id/backBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5sp"
-                    android:background="@drawable/back" />
-
-                <TextView
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/ProfileToolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Profile"
-                    android:textColor="@color/TextColor"
-                    android:textStyle="bold"
-                    android:textSize="21sp"
-                    android:paddingStart="12sp" />
-            </androidx.appcompat.widget.Toolbar>
+                    android:layout_height="80dp"
+                    android:background="@color/colorControlNormal"
+                    android:paddingTop="38dp"
+                    app:titleTextAppearance="@style/ToolbarTitleBold">
 
+                    <TextView
+                        android:id="@+id/backBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/back"
+                        android:padding="5sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="12sp"
+                        android:text="Profile"
+                        android:textColor="@color/TextColor"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
+                </androidx.appcompat.widget.Toolbar>
             </androidx.cardview.widget.CardView>
 
-            <!-- Profile Image -->
+            <!-- Profile Image (ICON / PHOTO) -->
+
             <FrameLayout
                 android:layout_width="120dp"
                 android:layout_height="120dp"
@@ -76,8 +76,8 @@
                     android:id="@+id/profileImage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
                     android:background="@drawable/circle_border"
+                    android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/CircleImageView" />
 
                 <ImageView
@@ -85,150 +85,317 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="bottom|end"
-                    android:padding="4dp"
-                    android:src="@drawable/ic_pencil"
                     android:background="@drawable/circle_bg"
                     android:clickable="true"
-                    android:focusable="true"/>
+                    android:focusable="true"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_pencil" />
             </FrameLayout>
+
+            <!-- ================= AVATAR SELECTION UI ================= -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar1"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_1"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar2"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_2"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar3"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_3"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar5"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_5"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar6"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_6"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar7"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_7"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar8"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_8"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar9"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_9"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar10"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_10"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar11"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_11"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar12"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_12"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar13"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_13"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar14"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_14"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar15"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_15"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar4"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:scaleType="centerCrop"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/avatar_4"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar17"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:scaleType="centerCrop"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/avatar_17"
+                        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatar16"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:scaleType="centerCrop" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+            <!-- ======================================================= -->
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:paddingHorizontal="12dp">
-            <!-- Name Field -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="24dp"
-                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/tvFirstNameLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Name"
-                    android:textColor="@color/TextColor"
-                    android:layout_marginStart="5dp"
-                    android:textSize="17sp" />
-
-                <EditText
-                    android:id="@+id/etFirstName"
+                <!-- Name -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_edittext"
-                    android:padding="12dp"
-                    android:hint="Type your name"
-                    android:textColor="@color/profileColor"
-                    android:textSize="14sp"
-                    android:focusable="false"
-                    android:clickable="true"/>
-            </LinearLayout>
+                    android:layout_marginTop="24dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-            <!-- Email Field -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
+                    <TextView
+                        android:id="@+id/tvFirstNameLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="Name"
+                        android:textColor="@color/TextColor"
+                        android:textSize="17sp" />
 
-                <TextView
-                    android:id="@+id/tvEmailLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textColor="@color/TextColor"
-                    android:layout_marginStart="5dp"
-                    android:textSize="17sp" />
+                    <EditText
+                        android:id="@+id/etFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_edittext"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="Type your name"
+                        android:padding="12dp"
+                        android:textColor="@color/profileColor"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/etEmail"
+                <!-- Email -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_edittext"
-                    android:padding="12dp"
-                    android:hint="Type your email"
-                    android:textColor="@color/profileColor"
-                    android:textSize="14sp"
-                    android:focusable="false"
-                    android:clickable="true"/>
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-            <!-- Phone Field -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
+                    <TextView
+                        android:id="@+id/tvEmailLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="Email"
+                        android:textColor="@color/TextColor"
+                        android:textSize="17sp" />
 
-                <TextView
-                    android:id="@+id/tvPhoneLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Phone Number"
-                    android:textColor="@color/TextColor"
-                    android:layout_marginStart="5dp"
-                    android:textSize="17sp" />
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_edittext"
+                        android:backgroundTint="#E9E3E3"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="Type your email"
+                        android:padding="12dp"
+                        android:textColor="@color/profileColor"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/etPhone"
+                <!-- Phone -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_edittext"
-                    android:padding="12dp"
-                    android:hint="Type your number"
-                    android:textColor="@color/profileColor"
-                    android:inputType="phone"
-                    android:textSize="14sp"
-                    android:focusable="false"
-                    android:clickable="true"/>
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-            <!-- About Field -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
+                    <TextView
+                        android:id="@+id/tvPhoneLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="Phone Number"
+                        android:textColor="@color/TextColor"
+                        android:textSize="17sp" />
 
-                <TextView
-                    android:id="@+id/tvAboutLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="About"
-                    android:textColor="@color/TextColor"
-                    android:layout_marginStart="5dp"
-                    android:textSize="17sp" />
+                    <EditText
+                        android:id="@+id/etPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_edittext"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="Type your number"
+                        android:inputType="phone"
+                        android:padding="12dp"
+                        android:textColor="@color/profileColor"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/etAddress"
+                <!-- About -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_edittext"
-                    android:padding="12dp"
-                    android:hint="About yourself"
-                    android:textColor="@color/profileColor"
-                    android:textSize="14sp"
-                    android:focusable="false"
-                    android:clickable="true"/>
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-            <!-- Logout Button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/BtnlogOut"
-                style="@android:style/Widget.Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="80dp"
-                android:background="@drawable/fsub_bg"
-                android:padding="12dp"
-                android:text="Log Out"
-                android:textSize="20sp"
-                android:visibility="gone"
-                android:textStyle="bold"/>
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvAboutLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="About"
+                        android:textColor="@color/TextColor"
+                        android:textSize="17sp" />
+
+                    <EditText
+                        android:id="@+id/etAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_edittext"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="About yourself"
+                        android:padding="12dp"
+                        android:textColor="@color/profileColor"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!-- Logout -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/BtnlogOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="80dp"
+                    android:background="@drawable/fsub_bg"
+                    android:text="Log Out"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

@@ -6,16 +6,18 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 import com.vmpk.codequerst.R;
-import com.google.android.material.imageview.ShapeableImageView;
 
 public class ProfileViewActivity extends AppCompatActivity {
-    ShapeableImageView profileViewImage;
-    TextView backProfileView;
+    private ImageView profileImageView;
+    TextView backView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,25 +25,39 @@ public class ProfileViewActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile_view);
 
-        backProfileView = findViewById(R.id.backProfileView);
-        profileViewImage = findViewById(R.id.ProfileImageView);
+        profileImageView = findViewById(R.id.profileImageView);
+        backView = findViewById(R.id.backView);
 
-        ///     received img from ProfileActivity
-        Intent intent = getIntent();
-        if (intent.hasExtra("imageUri")) {
-            Uri imageUri = Uri.parse(intent.getStringExtra("imageUri"));
-            profileViewImage.setImageURI(imageUri);
-        } else if (intent.hasExtra("imageBitmap")) {
-            byte[] byteArray = intent.getByteArrayExtra("imageBitmap");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            profileViewImage.setImageBitmap(bitmap);
+        // 🔥 Receive imageUri
+        String imageUriString = getIntent().getStringExtra("imageUri");
+
+        // 🔥 Receive bitmap
+        byte[] byteArray = getIntent().getByteArrayExtra("imageBitmap");
+
+        if (imageUriString != null) {
+
+            Uri imageUri = Uri.parse(imageUriString);
+
+            Glide.with(this)
+                    .load(imageUri)
+                    .into(profileImageView);
+
+        } else if (byteArray != null) {
+
+            Bitmap bitmap = BitmapFactory.decodeByteArray(
+                    byteArray,
+                    0,
+                    byteArray.length
+            );
+
+            profileImageView.setImageBitmap(bitmap);
+
+            backView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
         }
-
-        backProfileView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 }

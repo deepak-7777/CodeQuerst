@@ -42,7 +42,7 @@ public class StreakQuizActivity extends AppCompatActivity {
     CountDownTimer countDownTimer;
     boolean timerRunning = false;
     int timePerQuestion = 12; // seconds
-    String streakStartDate = "2025-11-10"; // first day of streak
+    String streakStartDate = "2025-12-1"; // first day of streak
     String dayKey;
     int correctCount = 0; // ✅ to count correct answers
 

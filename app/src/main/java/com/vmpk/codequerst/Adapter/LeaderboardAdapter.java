@@ -5,38 +5,42 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.bumptech.glide.Glide;
-import com.vmpk.codequerst.Model.UserScore;
-import com.vmpk.codequerst.R;
-import com.google.android.material.imageview.ShapeableImageView;
-import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
+import com.bumptech.glide.Glide;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.vmpk.codequerst.Model.UserScore;
+import com.vmpk.codequerst.R;
+
+import java.util.List;
+
+public class LeaderboardAdapter
+        extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
     private Context context;
     private List<UserScore> userList;
-    private OnItemClickListener listener;
-    private boolean showWeekly; // true = weekly, false = all-time
+    private boolean showWeekly = false;
 
-    // Interface for item click
+    // 🔹 Item click interface
     public interface OnItemClickListener {
         void onItemClick(UserScore user);
     }
+
+    private OnItemClickListener listener;
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    // Constructor
+    // 🔹 Constructor
     public LeaderboardAdapter(Context context, List<UserScore> userList) {
         this.context = context;
         this.userList = userList;
-        this.showWeekly = showWeekly;
     }
 
-    // Update weekly/all-time mode
+    // 🔹 Toggle weekly / all-time
     public void setShowWeekly(boolean showWeekly) {
         this.showWeekly = showWeekly;
         notifyDataSetChanged();
@@ -44,30 +48,78 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_leaderboard, parent, false);
+    public ViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent, int viewType) {
+
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.item_leaderboard, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(
+            @NonNull ViewHolder holder, int position) {
+
         UserScore user = userList.get(position);
 
-        // Rank starts from 4 (podium 1-3 are separate)
+        // 🏅 Rank (top 3 alag hote hain)
         holder.tvRank.setText(String.valueOf(position + 4));
-        holder.tvName.setText(user.getName() != null ? user.getName() : "User");
 
-        // ✅ Show correct points (weekly or all-time)
-        int points = showWeekly ? user.getWeeklyPoints() : user.getTotalPoints();
+        // 👤 Name
+        holder.tvName.setText(
+                user.getName() != null ? user.getName() : "User"
+        );
+
+        // ⭐ Points
+        int points = showWeekly
+                ? user.getWeeklyPoints()
+                : user.getTotalPoints();
+
         holder.tvPoints.setText(points + " pts");
 
-        if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
-            Glide.with(context).load(user.getProfileImage()).circleCrop().into(holder.imgProfile);
+        // 🖼️ PROFILE IMAGE / AVATAR
+        String imageValue = user.getProfileImage();
+
+        if (imageValue != null && !imageValue.isEmpty()) {
+
+            // 🌐 URL image (Firebase / Google / Gallery)
+            if (imageValue.startsWith("http")) {
+
+                Glide.with(context)
+                        .load(imageValue)
+                        .circleCrop()
+                        .placeholder(R.drawable.ic_person)
+                        .error(R.drawable.ic_person)
+                        .into(holder.imgProfile);
+            }
+
+            // 🧑‍🎨 Avatar (avatar_1 → avatar_15)
+            else if (imageValue.startsWith("avatar_")) {
+
+                int resId = context.getResources().getIdentifier(
+                        imageValue,           // avatar_1 ...
+                        "drawable",
+                        context.getPackageName()
+                );
+
+                if (resId != 0) {
+                    holder.imgProfile.setImageResource(resId);
+                } else {
+                    holder.imgProfile.setImageResource(R.drawable.ic_person);
+                }
+            }
+
+            // ❌ Unknown value
+            else {
+                holder.imgProfile.setImageResource(R.drawable.ic_person);
+            }
+
         } else {
-            holder.imgProfile.setImageResource(R.drawable.ic_person); // default image
+            // Default icon
+            holder.imgProfile.setImageResource(R.drawable.ic_person);
         }
 
-        // Item click listener
+        // 🔘 Item click
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(user);
@@ -77,10 +129,12 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     @Override
     public int getItemCount() {
-        return userList.size();
+        return userList != null ? userList.size() : 0;
     }
 
+    // 🔹 ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
         TextView tvRank, tvName, tvPoints;
         ShapeableImageView imgProfile;
 
@@ -93,10 +147,10 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         }
     }
 
-    // Update list
+    // 🔹 Update list
     public void updateList(List<UserScore> newList) {
-        this.userList.clear();
-        this.userList.addAll(newList);
+        userList.clear();
+        userList.addAll(newList);
         notifyDataSetChanged();
     }
 }

@@ -17,153 +17,134 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_launcher_foreground"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CodeQuerst">
+        android:theme="@style/Theme.CodeQuerst"
+        tools:replace="android:fullBackupContent">
+
+        <!-- 🔥 REQUIRED FOR IMAGE CROP -->
         <activity
-            android:name=".Activity.ForgotActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.LoginEmailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.FriendActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.StreakQuizActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.StreakResultActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.StreakActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.LevelResultActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.CoinsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.PointsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.LevelQuizActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.ChooseKotlinActivity"
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!-- 🔥 REQUIRED FOR CAMERA + CROP -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.ChooseJavaScriptActivity"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- ================= EXISTING ACTIVITIES ================= -->
+
+        <activity android:name=".Activity.ProfileViewActivity" android:exported="false"/>
+        <activity android:name=".Activity.ForgotActivity" android:exported="false"/>
+        <activity android:name=".Activity.RegisterActivity" android:exported="false"/>
+        <activity android:name=".Activity.LoginEmailActivity" android:exported="false"/>
+        <activity android:name=".Activity.FriendActivity" android:exported="false"/>
+        <activity android:name=".Activity.StreakQuizActivity" android:exported="false"/>
+        <activity android:name=".Activity.StreakResultActivity" android:exported="false"/>
+        <activity android:name=".Activity.StreakActivity" android:exported="false"/>
+        <activity android:name=".Activity.LevelResultActivity" android:exported="false"/>
+        <activity android:name=".Activity.CoinsActivity" android:exported="false"/>
+        <activity android:name=".Activity.PointsActivity" android:exported="false"/>
+        <activity android:name=".Activity.LevelQuizActivity" android:exported="false"/>
+
+        <activity android:name=".Activity.ChooseKotlinActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.ChooseJavaActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.ChooseJavaScriptActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.ChoosePythonActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.ChooseJavaActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.ChooseCppActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.ChoosePythonActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.ChooseActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.ChooseCppActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.RankingViewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.BJoinQuizActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.AJoinQuizActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.ChooseActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.QuizDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.FinalCreateQuizActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.BCreateQuizActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.RankingViewActivity" android:exported="false"/>
+        <activity android:name=".Activity.BJoinQuizActivity" android:exported="false"/>
+
+        <activity android:name=".Activity.AJoinQuizActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.ACreateQuizActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.QuizDetailActivity" android:exported="false"/>
+        <activity android:name=".Activity.FinalCreateQuizActivity" android:exported="false"/>
+
+        <activity android:name=".Activity.BCreateQuizActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.CreateQuizActivity"
-            android:exported="false" />
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.ACreateQuizActivity"
+            android:exported="false"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.CreateQuizActivity" android:exported="false"/>
+
         <activity
             android:name=".Activity.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activity.ProfileViewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.HomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.SplashActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.QuizActivity"
+
+        <activity android:name=".Activity.HomeActivity" android:exported="false"/>
+        <activity android:name=".Activity.ProfileActivity" android:exported="false"/>
+        <activity android:name=".Activity.SplashActivity" android:exported="false"/>
+
+        <activity android:name=".Activity.QuizActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.ResultActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.JavaScriptActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.ResultActivity" android:exported="false"/>
+        <activity android:name=".Activity.JavaScriptActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.JavaActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.JavaActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.KotlinActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.KotlinActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.PythonActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.PythonActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.CppActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.CppActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.CActivity"
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.CActivity"
             android:exported="false"
-            android:theme="@style/AppBackground" />
-        <activity
-            android:name=".Activity.PrivacyActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.AboutActivity"
-            android:exported="false" />
+            android:theme="@style/AppBackground"/>
+
+        <activity android:name=".Activity.PrivacyActivity" android:exported="false"/>
+        <activity android:name=".Activity.AboutActivity" android:exported="false"/>
+
     </application>
 
 </manifest>

@@ -40,6 +40,7 @@ public class AJoinQuizActivity extends AppCompatActivity {
     private int correctCount = 0;
     private String quizId;
     private FirebaseFirestore db;
+    private String creatorUid = null;
     private int globalTimePerQuestion = 15; // fallback by default
 
     @Override
@@ -102,6 +103,9 @@ public class AJoinQuizActivity extends AppCompatActivity {
         db.collection("quizzes").document(quizId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
+
+                        creatorUid = documentSnapshot.getString("creatorUid");
+
                         loadingLayout.setVisibility(View.GONE);
                         contentLayout.setVisibility(View.VISIBLE);
 
@@ -257,9 +261,13 @@ public class AJoinQuizActivity extends AppCompatActivity {
             Intent intent = new Intent(AJoinQuizActivity.this, BJoinQuizActivity.class);
             intent.putExtra("totalQuestions", questionList.size());
             intent.putExtra("correctAnswers", correctCount);
-            intent.putExtra("questionList", questionListToSend); //  send question list
+            intent.putExtra("questionList", questionListToSend);
+
+            // 🔥 THIS IS THE ONLY REQUIRED ADDITION
+            intent.putExtra("creatorUid", creatorUid);
             startActivity(intent);
             finish();
+
         }
     }
 

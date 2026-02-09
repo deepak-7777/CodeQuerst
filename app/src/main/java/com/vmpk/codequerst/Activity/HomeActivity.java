@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -43,7 +44,8 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
-   private LinearLayout c, cpp, python, java, kotlin, javaScript, createQuiz, weeklyStreak, playFriend;
+    private BroadcastReceiver profileReceiver;
+    private LinearLayout c, cpp, python, java, kotlin, javaScript, createQuiz, weeklyStreak, playFriend;
    private ChipNavigationBar chipNavigationBar;
    private ScrollView homeScrollView;
    private ShapeableImageView profileImage;
@@ -52,9 +54,9 @@ public class HomeActivity extends AppCompatActivity {
    private FirebaseAuth firebaseAuth;
    private DatabaseReference usersRef;
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
-
     private SwipeRefreshLayout swipeRefresh;
     private BroadcastReceiver networkReceiver;
+    private ValueEventListener profileListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +147,35 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(HomeActivity.this, CreateQuizActivity.class));
             }
         });
+
+        profileReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                loadUserProfile();
+            }
+        };
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter("PROFILE_UPDATED");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            registerReceiver(profileReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(profileReceiver, filter);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (profileReceiver != null) {
+            unregisterReceiver(profileReceiver);
+        }
+    }
+
 
     private void loadUserPoints() {
         boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
@@ -230,11 +260,13 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void loadUserProfile() {
+
         boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
         TextView welcomeText = findViewById(R.id.textView4);
 
         if (isGuest) {
-            // Guest ke liye direct SharedPreferences
+
+            // 🔹 Guest user
             String name = sharedPreferences.getString("name", "Guest User");
             userName.setText(name);
             setDefaultProfileImage(name);
@@ -251,63 +283,114 @@ public class HomeActivity extends AppCompatActivity {
             sharedPreferences.registerOnSharedPreferenceChangeListener(prefListener);
 
         } else {
+
             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            if (currentUser != null) {
-                String uid = currentUser.getUid();
-                usersRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            if (currentUser == null) return;
 
-                //  Step 1: Offline cache load karo
-                String cachedName = sharedPreferences.getString("name", "User");
-                String cachedImage = sharedPreferences.getString("profileImage", "");
-                userName.setText(cachedName);
+            String uid = currentUser.getUid();
+            usersRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(uid);
 
-                if (!cachedImage.isEmpty()) {
-                    Glide.with(HomeActivity.this)
-                            .load(cachedImage)
-                            .circleCrop()
-                            .into(profileImage);
+            // 🔹 STEP 1: Offline cache
+            String cachedName = sharedPreferences.getString("name", "User");
+            String cachedImage = sharedPreferences.getString("profileImage", "");
+
+            userName.setText(cachedName);
+
+            if (cachedImage.startsWith("avatar_")) {
+
+                int resId = getResources().getIdentifier(
+                        cachedImage, "drawable", getPackageName());
+
+                if (resId != 0) {
+                    profileImage.setImageResource(resId);
                 } else {
                     setDefaultProfileImage(cachedName);
                 }
 
-                //  Step 2: Agar network hai to Firebase se refresh karo
-                if (isNetworkAvailable()) {
+            } else if (!cachedImage.isEmpty()) {
 
-                    usersRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                String name = snapshot.child("name").getValue(String.class);
-                                String imageUrl = snapshot.child("profileImage").getValue(String.class);
+                if (profileImage != null && profileImage.getContext() != null) {
+                    Glide.with(profileImage)
+                            .load(cachedImage)
+                            .circleCrop()
+                            .placeholder(R.drawable.ic_person)
+                            .error(R.drawable.ic_person)
+                            .into(profileImage);
+                }
 
-                                if (name != null) {
-                                    userName.setText(name);
-                                    setDefaultProfileImage(name);
-                                }
+            } else {
+                setDefaultProfileImage(cachedName);
+            }
 
-                                if (imageUrl != null && !imageUrl.isEmpty()) {
-                                    Glide.with(HomeActivity.this)
-                                            .load(imageUrl)
-                                            .circleCrop()
-                                            .into(profileImage);
-                                }
+            // 🔹 STEP 2: Firebase refresh
+            if (isNetworkAvailable()) {
 
-                                // Cache update
-                                cacheProfileToPrefs(snapshot);
-                            }
+                // ❗ IMPORTANT: remove old listener first
+                if (profileListener != null) {
+                    usersRef.removeEventListener(profileListener);
+                }
+
+                profileListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        // 🛡️ Activity already dead → STOP
+                        if (isFinishing() || isDestroyed()) return;
+                        if (!snapshot.exists()) return;
+
+                        String name = snapshot.child("name").getValue(String.class);
+                        String imageValue = snapshot.child("profileImage").getValue(String.class);
+
+                        if (name != null) {
+                            userName.setText(name);
+                            welcomeText.setText("Welcome Back");
                         }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {}
-                    });
+                        // 🔹 AVATAR / IMAGE HANDLE
+                        if (imageValue != null && imageValue.startsWith("avatar_")) {
 
-                } else {
-                    //  Agar network off hai → sirf cached data hi rahega
-                    welcomeText.setText("Welcome Back");
-                }
+                            int resId = getResources().getIdentifier(
+                                    imageValue, "drawable", getPackageName());
+
+                            if (resId != 0) {
+                                profileImage.setImageResource(resId);
+                            } else if (name != null) {
+                                setDefaultProfileImage(name);
+                            }
+
+                        } else if (imageValue != null && !imageValue.isEmpty()) {
+
+                            if (profileImage != null && profileImage.getContext() != null) {
+                                Glide.with(profileImage)
+                                        .load(imageValue)
+                                        .circleCrop()
+                                        .placeholder(R.drawable.ic_person)
+                                        .error(R.drawable.ic_person)
+                                        .into(profileImage);
+                            }
+
+                        } else if (name != null) {
+                            setDefaultProfileImage(name);
+                        }
+
+                        // 🔹 Cache update
+                        cacheProfileToPrefs(snapshot);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {}
+                };
+
+                usersRef.addValueEventListener(profileListener);
+
+            } else {
+                welcomeText.setText("Welcome Back");
             }
         }
     }
+
 
 
     private void cacheProfileToPrefs(DataSnapshot snapshot) {
@@ -395,13 +478,16 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (sharedPreferences != null && prefListener != null) {
+
+        if (profileListener != null && usersRef != null) {
+            usersRef.removeEventListener(profileListener);
+        }
+
+        if (prefListener != null) {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefListener);
         }
-        if (networkReceiver != null) {
-            unregisterReceiver(networkReceiver);
-        }
     }
+
 
     @Override
     public void onBackPressed() {

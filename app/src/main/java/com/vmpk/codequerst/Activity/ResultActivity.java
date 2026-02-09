@@ -1,6 +1,5 @@
 package com.vmpk.codequerst.Activity;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,47 +19,44 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.vmpk.codequerst.Model.Question;
-import com.vmpk.codequerst.Model.UserScore;
-import com.vmpk.codequerst.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
+import com.vmpk.codequerst.Model.Question;
+import com.vmpk.codequerst.Model.UserScore;
+import com.vmpk.codequerst.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResultActivity extends AppCompatActivity {
 
     private Button btnExploreMore;
     private TextView tvCorrectAnswers, tvTotalQuestions, tvName, tvRank;
     private ImageView imgProfile;
+
     private ArrayList<Question> questionList;
     private HashMap<Integer, Integer> userAnswers;
+
     private FirebaseAuth firebaseAuth;
     private DatabaseReference usersRef;
-    private long quizStartTime;
-    private long quizEndTime;
     private String currentUid;
+
+    private long quizStartTime, quizEndTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
-        // Initialize views
         tvCorrectAnswers = findViewById(R.id.tvCorrectAnswers);
         tvTotalQuestions = findViewById(R.id.tvTotalQuestions);
-        imgProfile = findViewById(R.id.imgProfile);
-        btnExploreMore = findViewById(R.id.btnExploreMore);
         tvName = findViewById(R.id.tvName);
         tvRank = findViewById(R.id.tvRank);
+        imgProfile = findViewById(R.id.imgProfile);
+        btnExploreMore = findViewById(R.id.btnExploreMore);
 
         btnExploreMore.setOnClickListener(v -> {
-            startActivity(new android.content.Intent(ResultActivity.this, HomeActivity.class));
+            startActivity(new android.content.Intent(this, HomeActivity.class));
             finish();
         });
 
@@ -71,203 +67,149 @@ public class ResultActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        currentUid = (user != null) ? user.getUid() : null;
+        currentUid = user != null ? user.getUid() : null;
 
         if (questionList != null && userAnswers != null) {
             int correct = calculateAndDisplayResult();
-            if (user != null && user.getEmail() != null) {
-                saveLeaderboard(user, correct);
-            }
-        } else {
-            setDefaultProfileImage("U");
+            if (user != null) saveLeaderboard(user, correct);
         }
 
-        if (user != null && user.getEmail() != null) {
-            usersRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+        if (user != null) {
+            usersRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(user.getUid());
             loadUserProfile();
             loadAndSetRank();
         } else {
             setDefaultProfileImage("U");
         }
 
-        // Status bar styling
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            window.setStatusBarColor(Color.TRANSPARENT);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decorView = getWindow().getDecorView();
-            int flags = decorView.getSystemUiVisibility();
-            if (isDarkModeOn()) {
-                decorView.setSystemUiVisibility(flags & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            } else {
-                decorView.setSystemUiVisibility(flags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        }
+        setupStatusBar();
     }
 
+    // ===================================================
+    // 🔹 Result Calculation
+    // ===================================================
     private int calculateAndDisplayResult() {
-        int totalQ = questionList.size();
         int correct = 0;
         for (int i = 0; i < questionList.size(); i++) {
-            Question q = questionList.get(i);
-            if (userAnswers.containsKey(i)) {
-                int userAns = userAnswers.get(i);
-                if (userAns == q.getAnswer()) correct++;
+            if (userAnswers.containsKey(i) &&
+                    userAnswers.get(i) == questionList.get(i).getAnswer()) {
+                correct++;
             }
         }
         tvCorrectAnswers.setText("Correct Answers " + correct);
-        tvTotalQuestions.setText(" / " + totalQ);
+        tvTotalQuestions.setText(" / " + questionList.size());
         return correct;
     }
 
+    // ===================================================
+    // 🔹 Save Leaderboard (Avatar SAFE)
+    // ===================================================
     private void saveLeaderboard(FirebaseUser user, int correctAnswers) {
+
         String uid = user.getUid();
-        String name = (user.getDisplayName() != null) ? user.getDisplayName() : "User";
-        String profileImage = (user.getPhotoUrl() != null) ? user.getPhotoUrl().toString() : "";
-        long totalTime = quizEndTime - quizStartTime;
         long timestamp = System.currentTimeMillis();
+        long totalTime = quizEndTime - quizStartTime;
 
         String language = getIntent().getStringExtra("language");
         String topic = getIntent().getStringExtra("topic");
         String difficulty = getIntent().getStringExtra("difficulty");
 
-        if (language == null || topic == null || difficulty == null) {
-            Toast.makeText(this, "Cannot save score: missing quiz info", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (language == null || topic == null || difficulty == null) return;
 
         String topicKey = language + "_" + topic + "_" + difficulty;
-        DatabaseReference leaderboardRef = FirebaseDatabase.getInstance().getReference("leaderboard").child(uid);
+
+        DatabaseReference leaderboardRef =
+                FirebaseDatabase.getInstance().getReference("leaderboard").child(uid);
 
         leaderboardRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                UserScore userScore;
-                if (snapshot.exists()) {
-                    userScore = snapshot.getValue(UserScore.class);
-                    if (userScore == null) userScore = new UserScore();
-                } else {
-                    userScore = new UserScore();
+            public void onDataChange(@NonNull DataSnapshot snap) {
+
+                UserScore score = snap.exists()
+                        ? snap.getValue(UserScore.class)
+                        : new UserScore();
+
+                if (score == null) score = new UserScore();
+
+                score.setUid(uid);
+                score.setTimestamp(timestamp);
+                score.setTotalTime(score.getTotalTime() + totalTime);
+
+                if (score.getTopics() == null)
+                    score.setTopics(new HashMap<>());
+
+                if (!score.getTopics().containsKey(topicKey)) {
+                    score.getTopics().put(topicKey, correctAnswers);
+                    score.setTotalPoints(score.getTotalPoints() + correctAnswers);
                 }
 
-                userScore.setName(name);
-                userScore.setProfileImage(profileImage);
-                userScore.setTimestamp(timestamp);
-                userScore.setTotalTime(userScore.getTotalTime() + totalTime);
+                if (score.getQuizzes() == null)
+                    score.setQuizzes(new HashMap<>());
 
-                // Topics update
-                if (userScore.getTopics() == null) userScore.setTopics(new HashMap<>());
-                Map<String, Integer> topicsMap = userScore.getTopics();
-                int pointsToAdd = topicsMap.containsKey(topicKey) ? 0 : correctAnswers;
-                topicsMap.put(topicKey, correctAnswers);
-                userScore.setTopics(topicsMap);
+                score.getQuizzes().put(
+                        topicKey + "_" + timestamp,
+                        new UserScore.QuizAttempt(correctAnswers, timestamp)
+                );
 
-                // Total points (all-time)
-                userScore.setTotalPoints(userScore.getTotalPoints() + pointsToAdd);
+                // 🔥 Profile image ALWAYS from users node
+                UserScore finalScore = score;
+                FirebaseDatabase.getInstance()
+                        .getReference("users")
+                        .child(uid)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot u) {
+                                finalScore.setName(u.child("name").getValue(String.class));
+                                finalScore.setProfileImage(
+                                        u.child("profileImage").getValue(String.class));
 
-                // Quizzes map for weekly
-                if (userScore.getQuizzes() == null) userScore.setQuizzes(new HashMap<>());
-                Map<String, UserScore.QuizAttempt> quizMap = userScore.getQuizzes();
-                String quizId = topicKey + "_" + timestamp;
-                quizMap.put(quizId, new UserScore.QuizAttempt(correctAnswers, timestamp));
-                userScore.setQuizzes(quizMap);
+                                leaderboardRef.setValue(finalScore);
+                            }
 
-                // Weekly points calculation (last 7 days)
-                long oneWeekAgo = System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000;
-                int weeklySum = 0;
-                for (UserScore.QuizAttempt attempt : quizMap.values()) {
-                    if (attempt.getTimestamp() >= oneWeekAgo) {
-                        weeklySum += attempt.getPoints();
-                    }
-                }
-                userScore.setWeeklyPoints(weeklySum);
-
-                leaderboardRef.setValue(userScore).addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(ResultActivity.this, "Leaderboard update failed", Toast.LENGTH_SHORT).show();
-                    } else {
-                        loadAndSetRank(); // existing code
-                        // Launch PointsActivity after saving leaderboard
-//                        Intent intent = new Intent(ResultActivity.this, PointsActivity.class);
-//                        intent.putExtra("uid", currentUid); // Pass UID to fetch user-specific points
-//                        startActivity(intent);
-                    }
-                });
-
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ResultActivity.this, "Leaderboard update failed", Toast.LENGTH_SHORT).show();
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
-    private void loadAndSetRank() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("leaderboard");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<UserScore> allUsers = new ArrayList<>();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    UserScore u = child.getValue(UserScore.class);
-                    if (u != null) {
-                        u.setUid(child.getKey());
-                        allUsers.add(u);
-                    }
-                }
-
-                // Sort by totalPoints
-                Collections.sort(allUsers, (u1, u2) -> {
-                    if (u2.getTotalPoints() != u1.getTotalPoints()) {
-                        return u2.getTotalPoints() - u1.getTotalPoints();
-                    } else if (u1.getTotalTime() != u2.getTotalTime()) {
-                        return Long.compare(u1.getTotalTime(), u2.getTotalTime());
-                    } else {
-                        return Long.compare(u1.getTimestamp(), u2.getTimestamp());
-                    }
-                });
-
-                if (currentUid != null) {
-                    for (int i = 0; i < allUsers.size(); i++) {
-                        if (allUsers.get(i).getUid().equals(currentUid)) {
-                            int rank = i + 1;
-                            tvRank.setText("Rank " + rank);
-                            return;
-                        }
-                    }
-                }
-                tvRank.setText("Rank -");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                tvRank.setText("Rank -");
-            }
-        });
-    }
-
+    // ===================================================
+    // 🔹 Load User Profile (Avatar + URL)
+    // ===================================================
     private void loadUserProfile() {
+
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String name = "";
-                String imageUrl = "";
-                if (snapshot.exists()) {
-                    name = snapshot.child("name").getValue(String.class);
-                    imageUrl = snapshot.child("profileImage").getValue(String.class);
-                }
+            public void onDataChange(@NonNull DataSnapshot snap) {
 
-                tvName.setText((name != null && !name.isEmpty()) ? name : "User");
+                String name = snap.child("name").getValue(String.class);
+                String image = snap.child("profileImage").getValue(String.class);
 
-                if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Glide.with(ResultActivity.this)
-                            .load(imageUrl)
-                            .circleCrop()
-                            .into(imgProfile);
+                tvName.setText(name != null && !name.isEmpty() ? name : "User");
+
+                if (image != null && !image.isEmpty()) {
+
+                    if (image.startsWith("http")) {
+                        Glide.with(ResultActivity.this)
+                                .load(image)
+                                .circleCrop()
+                                .into(imgProfile);
+                    }
+                    else if (image.startsWith("avatar_")) {
+                        int resId = getResources()
+                                .getIdentifier(image, "drawable", getPackageName());
+                        if (resId != 0) imgProfile.setImageResource(resId);
+                        else setDefaultProfileImage(name);
+                    }
+                    else {
+                        setDefaultProfileImage(name);
+                    }
+
                 } else {
                     setDefaultProfileImage(name);
                 }
@@ -275,44 +217,95 @@ public class ResultActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                tvName.setText("User");
                 setDefaultProfileImage("U");
             }
         });
     }
 
-    private void setDefaultProfileImage(String fullName) {
-        if (fullName == null || fullName.isEmpty()) fullName = "U";
-        String[] words = fullName.trim().split(" ");
-        String initials = "";
-        for (String w : words) {
-            if (!w.isEmpty() && initials.length() < 2) initials += w.charAt(0);
+    // ===================================================
+    // 🔹 Rank
+    // ===================================================
+    private void loadAndSetRank() {
+        FirebaseDatabase.getInstance()
+                .getReference("leaderboard")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snap) {
+                        List<UserScore> list = new ArrayList<>();
+                        for (DataSnapshot c : snap.getChildren()) {
+                            UserScore u = c.getValue(UserScore.class);
+                            if (u != null) {
+                                u.setUid(c.getKey());
+                                list.add(u);
+                            }
+                        }
+
+                        list.sort((a, b) -> b.getTotalPoints() - a.getTotalPoints());
+
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getUid().equals(currentUid)) {
+                                tvRank.setText("Rank " + (i + 1));
+                                return;
+                            }
+                        }
+                        tvRank.setText("Rank -");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        tvRank.setText("Rank -");
+                    }
+                });
+    }
+
+    // ===================================================
+    // 🔹 Default Avatar
+    // ===================================================
+    private void setDefaultProfileImage(String name) {
+        if (name == null || name.isEmpty()) name = "U";
+        String i = name.substring(0, 1).toUpperCase();
+
+        Bitmap b = Bitmap.createBitmap(120, 120, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        p.setColor(0xFF6200EE);
+        c.drawCircle(60, 60, 60, p);
+
+        p.setColor(Color.WHITE);
+        p.setTextSize(42);
+        p.setTextAlign(Paint.Align.CENTER);
+
+        Rect r = new Rect();
+        p.getTextBounds(i, 0, 1, r);
+        c.drawText(i, 60, 60 - r.centerY(), p);
+
+        imgProfile.setImageBitmap(b);
+    }
+
+    // ===================================================
+    // 🔹 Status Bar
+    // ===================================================
+    private void setupStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window w = getWindow();
+            w.getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            w.setStatusBarColor(Color.TRANSPARENT);
         }
-        initials = initials.toUpperCase();
-
-        int size = 120;
-        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(0xFF6200EE);
-        canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint);
-
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(48f);
-        paint.setTextAlign(Paint.Align.CENTER);
-        Rect bounds = new Rect();
-        paint.getTextBounds(initials, 0, initials.length(), bounds);
-        float x = size / 2f;
-        float y = size / 2f - (bounds.top + bounds.bottom) / 2f;
-        canvas.drawText(initials, x, y, paint);
-
-        imgProfile.setImageBitmap(bitmap);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View d = getWindow().getDecorView();
+            int f = d.getSystemUiVisibility();
+            if (isDarkModeOn())
+                d.setSystemUiVisibility(f & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            else
+                d.setSystemUiVisibility(f | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
     }
 
     private boolean isDarkModeOn() {
-        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
+        return (getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
     }
 }

@@ -76,7 +76,8 @@ public class CoinsActivity extends AppCompatActivity {
     private void startPayment(String packName, int price, int coins) {
         // Here you integrate your payment gateway (e.g., Google Play Billing, Razorpay, etc.)
         // For demo, we just show a Toast
-        Toast.makeText(this, "Payment started for " + packName + " (" + price + " ₹)", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Payment started for " + packName + " (" + price + " ₹)", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Currently this plan is not available.", Toast.LENGTH_SHORT).show();
 
         // After successful payment, add coins to user
         addCoinsToUser(coins);

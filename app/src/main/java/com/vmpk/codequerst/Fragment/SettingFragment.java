@@ -96,7 +96,8 @@ public class SettingFragment extends Fragment {
         profileUpdateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                loadProfileFromFirebase();
+//                loadProfileFromFirebase();
+                loadProfileFromCache();
             }
         };
 
@@ -145,12 +146,13 @@ public class SettingFragment extends Fragment {
         shareApp.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-
-            // ✅ Yahan apne APKPure app ka exact link daalein
-            String apkPureLink = "https://86xf0kqg.r.ap-southeast-1.awstrack.me/L0/https:%2F%2Fapkpure.com%2Fp%2Fcom.vmpk.codequerst/1/010e019a4e69b6e3-3fb0f6ee-cde0-4291-9e5a-3360158953dc-000000/H56GsrgRGuYfT-mduJDnmBb7a5k=235";
-
-            String shareMessage = "Check out this amazing Quiz App! 🎯 Test your knowledge and have fun!\n\nDownload now:\n" + apkPureLink;
-
+            String playStoreLink =
+                    "https://play.google.com/store/apps/details?id="
+                            + requireContext().getPackageName();
+            String shareMessage =
+                    "🚀 Check out this amazing Quiz App!\n" +
+                            "🎯 Test your knowledge & challenge friends.\n\n" +
+                            "👉 Download now:\n" + playStoreLink;
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         });
@@ -249,27 +251,47 @@ public class SettingFragment extends Fragment {
     private void loadProfileFromCache() {
         boolean isGuest = sharedPreferences.getBoolean("isGuest", false);
         String name = sharedPreferences.getString("name", isGuest ? "Guest" : "User");
-        String about = sharedPreferences.getString("about", isGuest ? "Welcome Guest" : "Welcome Back");
+        String about = sharedPreferences.getString("about",
+                isGuest ? "Welcome Guest" : "Welcome Back");
         String imageUrl = sharedPreferences.getString("profileImage", "");
 
         settingName.setText(name);
         settingAbout.setText(about);
 
-        if (isGuest) {
-            // Guest mode → Always show initials image (no cached photo)
-            setDefaultProfileImage(name);
-            Glide.with(requireActivity()).clear(settingImage);
-        } else if (!imageUrl.isEmpty()) {
+        // 🔥 AVATAR / IMAGE HANDLING
+        if (imageUrl.startsWith("avatar_")) {
+
+            int resId = getResources().getIdentifier(
+                    imageUrl,
+                    "drawable",
+                    requireContext().getPackageName()
+            );
+
+            if (resId != 0) {
+                settingImage.setImageResource(resId);
+            } else {
+                setDefaultProfileImage(name);
+            }
+
+        }
+        // 🔥 NORMAL IMAGE URL (Firebase / Gallery)
+        else if (!imageUrl.isEmpty() && !isGuest) {
+
             Glide.with(requireActivity())
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_person)
                     .error(R.drawable.ic_person)
                     .circleCrop()
                     .into(settingImage);
-        } else {
+
+        }
+        // 🔥 GUEST / EMPTY CASE
+        else {
             setDefaultProfileImage(name);
+            Glide.with(requireActivity()).clear(settingImage);
         }
     }
+
 
 
     private void loadProfileFromFirebase() {

@@ -37,16 +37,13 @@ public class LevelQuizActivity extends AppCompatActivity {
     private RadioButton option1Level, option2Level, option3Level, option4Level;
     private CircularProgressIndicator circularProgressIndicator;
     private View levelLayout, quizToolbar, levelAll;
-
     private final List<LevelQuiz> questionList = new ArrayList<>();
     private int currentIndex = 0;
     private int correctCount = 0;
     private int levelNumber;
-
     private CountDownTimer countDownTimer;
     private boolean timerRunning = false;
     private long timeLeftInMillis = 12000; // 12 seconds
-
     private LevelViewModel viewModel;
 
     @Override
