@@ -58,6 +58,16 @@
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/5f98cfae-a25f-4422-af11-343de16f6130" width="150" style="margin: 161px;"/>
+  <img src="https://github.com/user-attachments/assets/e7ee3281-c5f5-4c12-b6b0-aa56a80a5721" width="150" style="margin: 161px;"/>
+  <img src="https://github.com/user-attachments/assets/87b67368-d7d7-4f0a-9913-ac2135d86882" width="150" style="margin: 16px;"/>
+</p>
+
+---
+
 ## 📥 Download
 
 The app is live on the **Google Play Store** and available for download.
