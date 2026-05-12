@@ -1,6 +1,6 @@
 # 📱 CodeQuest – Quiz Application
 
-**CodeQuest** is an interactive quiz application designed to make learning fun, competitive, and engaging. Users can test their knowledge by attempting quizzes, competing on leaderboards, and progressing through level-based challenges.
+**CodeQuest** is an interactive quiz application designed to make learning fun, competitive, and engaging. Users can test their knowledge by attempting quizzes, competing on leaderboards and progressing through level-based challenges.
 
 ---
 
