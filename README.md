@@ -28,7 +28,7 @@
 
 ### 🔗 Join Quiz via Code
 
-* Each created quiz generates a unique join code.
+* Each created quiz generates a unique join code. 
 * Users can share this code with friends so they can join and attempt the quiz.
 
 ### 🔥 Daily Streak Quiz
