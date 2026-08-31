@@ -84,7 +84,8 @@ Feel free to fork the repository, raise issues, or submit pull requests.
 ## 📧 Contact
 
 **Developer:** Deepak Kumar
-**App Name:** CodeQuest
+<br/>
+**App Name:** CodeQuerst
 
 ---
 
